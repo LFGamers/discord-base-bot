@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-server-list-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-server-list-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\AppBundle\Command;
 
 use Discord\WebSockets\WebSocket;
@@ -68,18 +76,18 @@ class RunCommand extends ContainerAwareCommand
     {
         $this->output = new SymfonyStyle($input, $output);
 
-        $this->output->title("Starting " . $this->getContainer()->getParameter('name'));
+        $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
 
-        /** @type WebSocket $ws */
+        /** @var WebSocket $ws */
         $ws = $this->getContainer()->get('discord')->ws;
 
         $ws->on('error', [$this, 'logError']);
         //$ws->on('raw', [$this, 'logEvent']);
 
-        $servers = 0;
+        $servers  = 0;
         $progress = null;
 
-        $this->output->note("Loading up servers. Please wait.");
+        $this->output->note('Loading up servers. Please wait.');
         $progress = $this->output->createProgressBar($this->getTotalServers());
 
         $ws->on(

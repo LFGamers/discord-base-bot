@@ -1,18 +1,25 @@
 <?php
 
+/*
+ * This file is part of discord-server-list-bot
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
+
 namespace Discord\Base;
 
-use Aequasi\Environment\SymfonyEnvironment;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
-use Symfony\Component\Debug\Debug;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
