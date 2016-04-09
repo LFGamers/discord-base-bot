@@ -1,0 +1,4 @@
+vendor
+bin/test.php
+var
+composer.lock
