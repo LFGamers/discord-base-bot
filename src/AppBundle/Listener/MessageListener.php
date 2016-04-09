@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-server-list-bot
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
