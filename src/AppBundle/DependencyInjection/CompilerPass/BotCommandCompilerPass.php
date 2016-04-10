@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,18 +9,24 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\AppBundle\DependencyInjection\CompilerPass;
 
 use Discord\Base\AbstractBotCommand;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -33,8 +39,8 @@ class BotCommandCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $botCommands = [];
-        
-        /** @type BundleInterface[] $modules */
+
+        /** @var BundleInterface[] $modules */
         $modules = $container->getParameter('kernel.bundles');
         foreach ($modules as $name => $module) {
             $ref = new \ReflectionClass($module);
@@ -44,7 +50,7 @@ class BotCommandCompilerPass implements CompilerPassInterface
             $finder->files()->name('*BotCommand.php')->in($dir);
 
             $prefix = $ref->getNamespaceName();
-            /** @type SplFileInfo $file */
+            /** @var SplFileInfo $file */
             foreach ($finder as $file) {
                 $ns = $prefix;
                 if ($relativePath = $file->getRelativePath()) {
@@ -54,13 +60,12 @@ class BotCommandCompilerPass implements CompilerPassInterface
 
                 $reflection = new \ReflectionClass($class);
                 if ($this->isValidBotCommand($reflection)) {
-                    $id = 'bot.command.'.strtolower(str_replace('\\', '_', $class));
-                    $def = $container->register($id, $class)->addArgument(new Reference('service_container'));
+                    $id            = 'bot.command.'.strtolower(str_replace('\\', '_', $class));
+                    $def           = $container->register($id, $class)->addArgument(new Reference('service_container'));
                     $botCommands[] = new Reference($id);
                 }
             }
         }
-
 
         $container->register('repository.command', BotCommandRepository::class)
             ->setArguments([$botCommands]);
@@ -70,7 +75,6 @@ class BotCommandCompilerPass implements CompilerPassInterface
      * @param \ReflectionClass $reflection
      *
      * @return bool|AbstractBotCommand
-     *
      */
     private function isValidBotCommand(\ReflectionClass $reflection)
     {

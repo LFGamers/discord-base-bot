@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base;
 
 use Discord\Base\AppBundle\Discord;
@@ -22,7 +30,6 @@ use Symfony\Bridge\Monolog\Logger;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\Tests\Fixtures\Author;
-use Symfony\Component\VarDumper\VarDumper;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -31,7 +38,7 @@ use Symfony\Component\Yaml\Yaml;
 abstract class AbstractBotCommand
 {
     /**
-     * Max message length
+     * Max message length.
      */
     const MAX_MESSAGE_LENGTH = 2000;
 
@@ -102,7 +109,7 @@ abstract class AbstractBotCommand
     {
         $parameters = array_merge(['command' => $this], $parameters);
 
-        /** @type TwigEngine $twig */
+        /** @var TwigEngine $twig */
         $twig = $this->container->get('twig');
 
         return $twig->render($template, $parameters);
@@ -155,7 +162,7 @@ abstract class AbstractBotCommand
     public function getContent($mentionless = true)
     {
         if ($mentionless) {
-            return str_replace([$this->prefix, $this->getBotMention().' '], '', $this->message->content);;
+            return str_replace([$this->prefix, $this->getBotMention().' '], '', $this->message->content);
         }
 
         return $this->message->content;
@@ -217,7 +224,7 @@ abstract class AbstractBotCommand
         }
 
         $server = $this->getServer();
-        $this->logger->debug("Matched ".$this->getName());
+        $this->logger->debug('Matched '.$this->getName());
         $this->logger->info(
             "Message Received, and matched\n".
             Yaml::dump(
@@ -234,11 +241,11 @@ abstract class AbstractBotCommand
                         'matches'    => $matches,
                         'mentions'   => array_map(
                             function ($user) {
-                                return $user->username . ' - ' . $user->id;
+                                return $user->username.' - '.$user->id;
                             },
                             $this->getMentions()
-                        )
-                    ]
+                        ),
+                    ],
                 ],
                 4,
                 4
@@ -275,7 +282,7 @@ abstract class AbstractBotCommand
     protected function sendMessage(Part $location, $message, $delay = 0, $deleteDelay = 0)
     {
         if (strlen($message) > static::MAX_MESSAGE_LENGTH) {
-            return $this->logger->error("Message is too long");
+            return $this->logger->error('Message is too long');
         }
 
         if ($delay > 0) {
@@ -297,7 +304,7 @@ abstract class AbstractBotCommand
             return $message;
         }
 
-        throw new \InvalidArgumentException("Location is not a valid place to send a message.");
+        throw new \InvalidArgumentException('Location is not a valid place to send a message.');
     }
 
     /**
@@ -375,7 +382,7 @@ abstract class AbstractBotCommand
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isAdmin()
     {
@@ -383,7 +390,7 @@ abstract class AbstractBotCommand
     }
 
     /**
-     * @param boolean $admin
+     * @param bool $admin
      *
      * @return AbstractBotCommand
      */
@@ -399,6 +406,6 @@ abstract class AbstractBotCommand
      */
     private function getBotMention()
     {
-        return '<@'.$this->discord->client->id.">";
+        return '<@'.$this->discord->client->id.'>';
     }
 }
