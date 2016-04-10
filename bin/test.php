@@ -1,10 +1,19 @@
 <?php
 
+/*
+ * This file is part of discord-base-bot
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
+
 use Discord\Base\Bot;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
 /**
- * @var Composer\Autoload\ClassLoader $loader
+ * @var Composer\Autoload\ClassLoader
  */
 $loader = require __DIR__.'/../vendor/autoload.php';
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
@@ -23,7 +32,7 @@ $bot = Bot::create(
         'admin_id'  => getenv('ADMIN_ID'),
         'token'     => getenv('TOKEN'),
         'modules'   => [],
-        'prefix'    => '%'
+        'prefix'    => '%',
     ]
 );
 

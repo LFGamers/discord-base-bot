@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\AppBundle\DependencyInjection\CompilerPass;
 
 use Discord\Base\AbstractBotCommand;
@@ -19,7 +27,6 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -73,7 +80,6 @@ class BotCommandCompilerPass implements CompilerPassInterface
      * @param \ReflectionClass $reflection
      *
      * @return bool|AbstractBotCommand
-     *
      */
     private function isValidBotCommand(\ReflectionClass $reflection)
     {

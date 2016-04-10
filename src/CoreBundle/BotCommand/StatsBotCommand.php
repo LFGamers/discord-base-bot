@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\CoreBundle\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
@@ -31,7 +39,7 @@ class StatsBotCommand extends AbstractBotCommand
      */
     public function handle()
     {
-        $this->responds("/^stats$/i", [$this, 'renderStats']);
+        $this->responds('/^stats$/i', [$this, 'renderStats']);
     }
 
     /**
@@ -41,22 +49,26 @@ class StatsBotCommand extends AbstractBotCommand
     {
         $users = $this->getUsers();
         $data  = [
-            'servers'  => sizeof($this->discord->client->guilds),
+            'servers'  => count($this->discord->client->guilds),
             'channels' => $this->getChannelCount(),
             'users'    => $users->count(),
-            'online'   => sizeof(
+            'online'   => count(
                 $users->filter(
                     function (Member $user) {
                         return $user->status !== 'offline';
                     }
                 )
             ),
-            'channel' => $this->isPrivateMessage() ? [] : [
+            'channel'  => $this->isPrivateMessage() ? [] : [
                 'channels' => sizeof($this->getServer()->channels),
                 'users'    => sizeof($this->getServer()->members),
-                'online'   => sizeof($this->getServer()->getMembersAttribute()->filter(function(Member $user) {
-                    return $user->status !== 'offline';
-                }))
+                'online'   => sizeof(
+                    $this->getServer()->getMembersAttribute()->filter(
+                        function (Member $user) {
+                            return $user->status !== 'offline';
+                        }
+                    )
+                )
             ]
         ];
 
@@ -70,7 +82,7 @@ class StatsBotCommand extends AbstractBotCommand
     {
         $channels = 0;
         foreach ($this->discord->client->guilds as $guild) {
-            $channels += sizeof($guild->channels);
+            $channels += count($guild->channels);
         }
 
         return $channels;
