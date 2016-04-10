@@ -33,7 +33,7 @@ class TwigLoaderCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        /** @type BundleInterface[] $modules */
+        /** @var BundleInterface[] $modules */
         $modules = $container->getParameter('kernel.modules');
         foreach ($modules as $module) {
             $ref = new \ReflectionClass($module);

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,11 +9,17 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\CoreBundle\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
-use Discord\Parts\User\Member;
-use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
@@ -32,7 +38,7 @@ class HelpBotCommand extends AbstractBotCommand
      */
     public function handle()
     {
-        $this->responds("/^help$/i", [$this, 'renderHelp']);
+        $this->responds('/^help$/i', [$this, 'renderHelp']);
     }
 
     /**
@@ -49,8 +55,8 @@ class HelpBotCommand extends AbstractBotCommand
                     [
                         'module' => [
                             'name'     => str_replace('Bundle', '', $name),
-                            'commands' => $commands
-                        ]
+                            'commands' => $commands,
+                        ],
                     ]
                 )
             );
@@ -61,7 +67,7 @@ class HelpBotCommand extends AbstractBotCommand
     {
         $modules = [];
 
-        /** @type BundleInterface $module */
+        /** @var BundleInterface $module */
         foreach ($this->container->get('kernel')->getModules() as $module) {
             $ids = $this->container->getParameter('bot.'.$module->getName().'.commands');
 

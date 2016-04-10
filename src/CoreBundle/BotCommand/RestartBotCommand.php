@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\CoreBundle\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
@@ -43,12 +51,13 @@ class RestartBotCommand extends AbstractBotCommand
         $time = isset($matches[1]) ? $matches[1] : 0;
         if ($time > 0) {
             $this->logger->info("Restarting in ${time} seconds.");
-            return $this->runAfter($time, function() {
+
+            return $this->runAfter($time, function () {
                 $this->restart();
             });
         }
 
-        $this->logger->info("Restarting!");
+        $this->logger->info('Restarting!');
         die(1);
     }
 }

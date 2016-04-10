@@ -80,8 +80,8 @@ class Bot
 
         $resolver->setDefault('status', '');
         $resolver->setDefault('prefix', '!');
-        
-        $resolver->setNormalizer('admin_id', function(Options $options, $value) {
+
+        $resolver->setNormalizer('admin_id', function (Options $options, $value) {
             return (string) $value;
         });
     }
