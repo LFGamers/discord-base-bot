@@ -104,7 +104,7 @@ class RunCommand extends ContainerAwareCommand
 
                 $this->output->success('Bot is ready!');
                 $this->getContainer()->get('listener.message')->listen();
-                $ws->on('message', [$this, 'onMessage']);
+                //$ws->on('message', [$this, 'onMessage']);
             }
         );
 

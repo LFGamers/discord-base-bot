@@ -3,8 +3,21 @@ framework:
     validation:      { enable_annotations: true }
     serializer:      { enable_annotations: true }
     router:          {resource: ~}
-    templating:      {engines: ['php']}
+    templating:      {engines: ['twig']}
     default_locale:  "en"
+
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+monolog:
+services:
+    bot_formatter:
+        class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
+        arguments:
+            - "[%%datetime%%] %%start_tag%%%%message%%%%end_tag%% (%%level_name%%) %%context%% %%extra%%\n"
+            - 'Y-m-d H:i:s'
+            - true
 
 monolog:
     handlers:
@@ -12,3 +25,11 @@ monolog:
             type:   stream
             path:   "%log_dir%/%name%.log"
             level:  debug
+
+        console:
+            type:   console
+            verbosity_levels:
+                VERBOSITY_NORMAL: NOTICE
+            channels: bot
+            formatter: bot_formatter
+    channels: ['bot']

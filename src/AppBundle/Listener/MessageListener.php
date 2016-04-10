@@ -11,7 +11,10 @@
 
 namespace Discord\Base\AppBundle\Listener;
 
+use Discord\Base\AbstractBotCommand;
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Repository\BotCommandRepository;
+use Monolog\Logger;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -24,23 +27,52 @@ class MessageListener
     private $discord;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @var BotCommandRepository
+     */
+    private $commandRepository;
+
+    /**
      * MessageListener constructor.
      *
-     * @param Discord $discord
+     * @param Discord              $discord
+     * @param Logger               $logger
+     * @param BotCommandRepository $commandRepository
      */
-    public function __construct(Discord $discord)
+    public function __construct(Discord $discord, Logger $logger, BotCommandRepository $commandRepository)
     {
-        $this->discord = $discord;
+        $this->discord           = $discord;
+        $this->logger            = $logger;
+        $this->commandRepository = $commandRepository;
     }
 
+    /**
+     *
+     */
     public function listen()
     {
-        $this->discord->ws->on('message', function ($message) {
-            $this->onMessage($message);
-        });
+        $this->discord->ws->on('message', [$this, 'onMessage']);
     }
 
-    private function onMessage($message)
+    /**
+     * @param $message
+     */
+    public function onMessage($message)
     {
+        if ($message->author->id === $this->discord->client->id) {
+            return;
+        }
+
+        $this->commandRepository->all()->forAll(
+            function ($index, AbstractBotCommand $command) use ($message) {
+                $command->setMessage($message);
+
+                $command->handle();
+            }
+        );
     }
 }

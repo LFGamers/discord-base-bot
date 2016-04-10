@@ -11,16 +11,20 @@
 
 namespace Discord\Base;
 
+use Discord\Base\AppBundle\AppBundle;
+use Discord\Base\CoreBundle\CoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\MonologBundle\MonologBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -76,7 +80,9 @@ class AppKernel extends Kernel
             new FrameworkBundle(),
             new MonologBundle(),
             new DoctrineBundle(),
-            new AppBundle\AppBundle(),
+            new TwigBundle(),
+            new AppBundle(),
+            new CoreBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev'], true)) {
