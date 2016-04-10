@@ -1,0 +1,11 @@
+**{{ module.name }} Module:**
+
+```apache
+{% for command in module.commands if not command.adminCommand %}
+{{ command.name }} - {{ command.description }}
+{% endfor %}
+
+{% if command.isAdmin %}{% for command in module.commands if command.adminCommand %}
+{{ command.name }} - Admin - {{ command.description }}
+{% endfor %}{% endif %}
+```

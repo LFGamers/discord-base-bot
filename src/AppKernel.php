@@ -22,6 +22,7 @@ use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\VarDumper\VarDumper;
@@ -40,6 +41,31 @@ class AppKernel extends Kernel
      * @var ContainerBuilder
      */
     private $userContainer;
+
+    /**
+     * @var BundleInterface[]
+     */
+    private $modules;
+
+    /**
+     * @return \Symfony\Component\HttpKernel\Bundle\BundleInterface[]
+     */
+    public function getModules()
+    {
+        return $this->modules;
+    }
+
+    /**
+     * @param \Symfony\Component\HttpKernel\Bundle\BundleInterface[] $modules
+     *
+     * @return AppKernel
+     */
+    public function setModules($modules)
+    {
+        $this->modules = $modules;
+
+        return $this;
+    }
 
     /**
      * @param OptionsResolver $resolver
@@ -76,14 +102,22 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
+        $modules = array_merge(
+            [new CoreBundle()],
+            $this->configuration['modules']
+        );
+
+        $this->setModules($modules);
+
         $bundles = [
             new FrameworkBundle(),
             new MonologBundle(),
             new DoctrineBundle(),
             new TwigBundle(),
             new AppBundle(),
-            new CoreBundle(),
         ];
+
+        $bundles = array_merge($bundles, $modules);
 
         if (in_array($this->getEnvironment(), ['dev'], true)) {
             $bundles[] = new DebugBundle();
@@ -128,8 +162,16 @@ class AppKernel extends Kernel
      */
     protected function getKernelParameters()
     {
+        $configuration = $this->configuration;
+        unset($configuration['modules']);
+
+        $configuration['kernel.modules'] = [];
+        foreach ($this->modules as $module) {
+            $configuration['kernel.modules'][] = get_class($module);
+        }
+
         return array_merge(
-            $this->configuration,
+            $configuration,
             [
                 'kernel.config_dir' => realpath(__DIR__.'/../config/'),
             ],

@@ -39,8 +39,6 @@ class StatsBotCommand extends AbstractBotCommand
      */
     protected function renderStats()
     {
-        dump($this->discord->client);
-
         $users = $this->getUsers();
         $data  = [
             'servers'  => sizeof($this->discord->client->guilds),
@@ -52,7 +50,14 @@ class StatsBotCommand extends AbstractBotCommand
                         return $user->status !== 'offline';
                     }
                 )
-            )
+            ),
+            'channel' => $this->isPrivateMessage() ? [] : [
+                'channels' => sizeof($this->getServer()->channels),
+                'users'    => sizeof($this->getServer()->members),
+                'online'   => sizeof($this->getServer()->getMembersAttribute()->filter(function(Member $user) {
+                    return $user->status !== 'offline';
+                }))
+            ]
         ];
 
         $this->reply($this->renderTemplate('@Core/stats.twig', $data));

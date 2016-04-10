@@ -1,4 +1,4 @@
 Currently joined to: {{ servers }} servers with {{ online }}/{{ users }} members and {{ channels }} channels.
 {% if not command.isPrivateMessage() %}{% spaceless %}
-    The current server has {{ online }}/{{ users }} members and {{ channels }} channels.
+    The current server has {{ channel.online }}/{{ channel.users }} members and {{ channel.channels }} channels.
 {% endspaceless %}{% endif %}

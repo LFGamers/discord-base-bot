@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -79,5 +80,9 @@ class Bot
 
         $resolver->setDefault('status', '');
         $resolver->setDefault('prefix', '!');
+        
+        $resolver->setNormalizer('admin_id', function(Options $options, $value) {
+            return (string) $value;
+        });
     }
 }

@@ -11,16 +11,9 @@
 
 namespace Discord\Base\AppBundle\DependencyInjection\CompilerPass;
 
-use Discord\Base\AbstractBotCommand;
-use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -32,21 +25,17 @@ class TwigLoaderCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $modules = [];
-
         /** @type BundleInterface[] $modules */
-        $bundles = $container->getParameter('kernel.bundles');
-        foreach ($bundles as $bundle) {
-            $ref = new \ReflectionClass($bundle);
+        $modules = $container->getParameter('kernel.modules');
+        foreach ($modules as $module) {
+            $ref = new \ReflectionClass($module);
             $dir = dirname($ref->getFileName());
 
-            if (file_exists($dir.'/BotCommand')) {
-                $container->getDefinition('twig.loader')
-                    ->addMethodCall(
-                        'addPath',
-                        [$dir.'/Resources/views/', str_replace('Bundle', '', $ref->getShortName())]
-                    );
-            }
+            $container->getDefinition('twig.loader')
+                ->addMethodCall(
+                    'addPath',
+                    [$dir.'/Resources/views/', str_replace('Bundle', '', $ref->getShortName())]
+                );
         }
     }
 }

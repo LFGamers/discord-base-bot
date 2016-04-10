@@ -15,7 +15,6 @@ use Discord\Base\AbstractBotCommand;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -33,9 +32,9 @@ class BotCommandCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
         $botCommands = [];
-        
+
         /** @type BundleInterface[] $modules */
-        $modules = $container->getParameter('kernel.bundles');
+        $modules = $container->getParameter('kernel.modules');
         foreach ($modules as $name => $module) {
             $ref = new \ReflectionClass($module);
             $dir = dirname($ref->getFileName());
@@ -43,7 +42,8 @@ class BotCommandCompilerPass implements CompilerPassInterface
             $finder = new Finder();
             $finder->files()->name('*BotCommand.php')->in($dir);
 
-            $prefix = $ref->getNamespaceName();
+            $moduleCommands = [];
+            $prefix         = $ref->getNamespaceName();
             /** @type SplFileInfo $file */
             foreach ($finder as $file) {
                 $ns = $prefix;
@@ -55,12 +55,15 @@ class BotCommandCompilerPass implements CompilerPassInterface
                 $reflection = new \ReflectionClass($class);
                 if ($this->isValidBotCommand($reflection)) {
                     $id = 'bot.command.'.strtolower(str_replace('\\', '_', $class));
-                    $def = $container->register($id, $class)->addArgument(new Reference('service_container'));
-                    $botCommands[] = new Reference($id);
+                    $container->register($id, $class)->addArgument(new Reference('service_container'))
+                        ->addTag('bot_command');
+                    $botCommands[]    = new Reference($id);
+                    $moduleCommands[] = $id;
                 }
             }
-        }
 
+            $container->setParameter('bot.'.$ref->getShortName().'.commands', $moduleCommands);
+        }
 
         $container->register('repository.command', BotCommandRepository::class)
             ->setArguments([$botCommands]);

@@ -73,7 +73,7 @@ abstract class AbstractBotCommand
     /**
      * @var bool
      */
-    protected $admin = false;
+    protected $adminCommand = false;
 
     /**
      * @return void
@@ -91,6 +91,8 @@ abstract class AbstractBotCommand
         $this->discord   = $container->get('discord');
         $this->logger    = $container->get('monolog.logger.bot');
         $this->prefix    = $container->getParameter('prefix');
+
+        $this->configure();
     }
 
     public function setMessage(Message $message)
@@ -209,8 +211,12 @@ abstract class AbstractBotCommand
 
     private function getMatches($content, $pattern, callable $callback)
     {
+        if ($this->isAdminCommand() && !$this->isAdmin()) {
+            return false;
+        }
+
         $regex   = Factory::getGuard();
-        $matched = $regex->matchAll($pattern, $content, $matches);
+        $matched = $regex->match($pattern, $content, $matches);
 
         if (!$matched) {
             return false;
@@ -234,7 +240,7 @@ abstract class AbstractBotCommand
                         'matches'    => $matches,
                         'mentions'   => array_map(
                             function ($user) {
-                                return $user->username . ' - ' . $user->id;
+                                return $user->username.' - '.$user->id;
                             },
                             $this->getMentions()
                         )
@@ -305,13 +311,28 @@ abstract class AbstractBotCommand
      * @param int    $delay
      * @param int    $deleteDelay
      *
-     * @return mixed
+     * @return Message
      */
     protected function reply($message, $delay = 0, $deleteDelay = 0)
     {
         $location = $this->message->channel;
 
         return $this->sendMessage($location, $message, $delay, $deleteDelay);
+    }
+
+    /**
+     * @param Message $message
+     * @param string  $content
+     *
+     * @return Message
+     * @throws \Discord\Exceptions\PartRequestFailedException
+     */
+    protected function updateMessage(Message $message, $content)
+    {
+        $message->content = $content;
+        $message->save();
+
+        return $message;
     }
 
     /**
@@ -377,28 +398,63 @@ abstract class AbstractBotCommand
     /**
      * @return boolean
      */
-    public function isAdmin()
+    public function isAdminCommand()
     {
-        return $this->admin;
+        return $this->adminCommand;
     }
 
     /**
-     * @param boolean $admin
+     * @param boolean $adminCommand
      *
      * @return AbstractBotCommand
      */
-    public function setAdmin($admin)
+    public function setAdminCommand($adminCommand)
     {
-        $this->admin = $admin;
+        $this->adminCommand = $adminCommand;
 
         return $this;
     }
 
     /**
+     * @return Discord
+     */
+    public function getDiscord()
+    {
+        return $this->discord;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
+    /**
      * @return string
      */
-    private function getBotMention()
+    public function getBotMention()
     {
         return '<@'.$this->discord->client->id.">";
+    }
+
+    /**
+     * @param int|floaval $interval
+     * @param callable    $callback
+     *
+     * @return \React\EventLoop\Timer\Timer|\React\EventLoop\Timer\TimerInterface
+     */
+    public function runAfter($interval, callable $callback)
+    {
+        return $this->discord->ws->loop->addTimer($interval, $callback);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin()
+    {
+        return (string) $this->getAuthor()->id === $this->container->getParameter('admin_id');
     }
 }

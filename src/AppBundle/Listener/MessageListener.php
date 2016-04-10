@@ -67,12 +67,10 @@ class MessageListener
             return;
         }
 
-        $this->commandRepository->all()->forAll(
-            function ($index, AbstractBotCommand $command) use ($message) {
-                $command->setMessage($message);
+        foreach ($this->commandRepository->all() as $command) {
+            $command->setMessage($message);
 
-                $command->handle();
-            }
-        );
+            $command->handle();
+        }
     }
 }
