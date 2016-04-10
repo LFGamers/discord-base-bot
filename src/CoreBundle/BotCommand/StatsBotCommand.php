@@ -60,16 +60,16 @@ class StatsBotCommand extends AbstractBotCommand
                 )
             ),
             'channel'  => $this->isPrivateMessage() ? [] : [
-                'channels' => sizeof($this->getServer()->channels),
-                'users'    => sizeof($this->getServer()->members),
-                'online'   => sizeof(
+                'channels' => count($this->getServer()->channels),
+                'users'    => count($this->getServer()->members),
+                'online'   => count(
                     $this->getServer()->getMembersAttribute()->filter(
                         function (Member $user) {
                             return $user->status !== 'offline';
                         }
                     )
-                )
-            ]
+                ),
+            ],
         ];
 
         $this->reply($this->renderTemplate('@Core/stats.twig', $data));

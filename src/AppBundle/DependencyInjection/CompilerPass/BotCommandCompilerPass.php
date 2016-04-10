@@ -40,7 +40,7 @@ class BotCommandCompilerPass implements CompilerPassInterface
     {
         $botCommands = [];
 
-        /** @type BundleInterface[] $modules */
+        /** @var BundleInterface[] $modules */
         $modules = $container->getParameter('kernel.modules');
         foreach ($modules as $name => $module) {
             $ref = new \ReflectionClass($module);
@@ -51,7 +51,7 @@ class BotCommandCompilerPass implements CompilerPassInterface
 
             $moduleCommands = [];
             $prefix         = $ref->getNamespaceName();
-            /** @type SplFileInfo $file */
+            /** @var SplFileInfo $file */
             foreach ($finder as $file) {
                 $ns = $prefix;
                 if ($relativePath = $file->getRelativePath()) {

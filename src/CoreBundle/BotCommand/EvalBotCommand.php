@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,6 +9,14 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\CoreBundle\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
@@ -41,8 +49,8 @@ class EvalBotCommand extends AbstractBotCommand
      */
     protected function evalCode(array $matches = [])
     {
-        $message = $this->reply("Executing Code");
-        $response = eval('return ' . $matches[1]);
+        $message  = $this->reply('Executing Code');
+        $response = eval('return '.$matches[1]);
 
         if (is_array($response) || is_object($response)) {
             $response = json_decode($response, true);

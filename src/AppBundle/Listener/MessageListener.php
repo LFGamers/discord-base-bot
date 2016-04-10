@@ -11,7 +11,6 @@
 
 namespace Discord\Base\AppBundle\Listener;
 
-use Discord\Base\AbstractBotCommand;
 use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Monolog\Logger;

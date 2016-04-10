@@ -331,8 +331,9 @@ abstract class AbstractBotCommand
      * @param Message $message
      * @param string  $content
      *
-     * @return Message
      * @throws \Discord\Exceptions\PartRequestFailedException
+     *
+     * @return Message
      */
     protected function updateMessage(Message $message, $content)
     {
@@ -411,7 +412,7 @@ abstract class AbstractBotCommand
     }
 
     /**
-     * @param boolean $adminCommand
+     * @param bool $adminCommand
      *
      * @return AbstractBotCommand
      */
