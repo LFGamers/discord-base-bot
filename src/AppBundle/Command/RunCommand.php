@@ -72,11 +72,11 @@ class RunCommand extends ContainerAwareCommand
         $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
 
         /**
-         * @var Discord $discord
+         * @var Discord
          * @var WebSocket $ws
          */
         $discord = $this->getContainer()->get('discord');
-        $ws = $discord->ws;
+        $ws      = $discord->ws;
 
         $ws->on('error', [$this, 'logError']);
         //$ws->on('raw', [$this, 'logEvent']);

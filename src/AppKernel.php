@@ -28,7 +28,6 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouteCollectionBuilder;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -195,7 +194,7 @@ class AppKernel extends Kernel
         unset($configuration['modules']);
 
         $c->setParameter('kernel.modules', array_map('get_class', $this->modules));
-        
+
         foreach ($configuration as $key => $values) {
             if ($key === 'parameters') {
                 foreach ($values as $name => $value) {
