@@ -1,0 +1,29 @@
+Discord\Base\AppBundle\Model\BaseServer:
+    type: document
+    collection: base_servers
+    indexes:
+        identifier_index:
+            keys:
+                identifier: asc
+            options:
+                unique: true
+                dropDups: true
+                safe: true
+        owner_index:
+            keys:
+                owner: asc
+        prefix_index:
+            keys:
+                prefix: asc
+    fields:
+        id:
+            id: true
+        identifier:
+            type: string
+        owner:
+            type: string
+        prefix:
+            type: string
+    referenceMany:
+        modules:
+            targetDocument: Discord\Base\AppBundle\Model\Module

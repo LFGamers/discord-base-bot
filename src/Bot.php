@@ -12,12 +12,11 @@
 namespace Discord\Base;
 
 use Aequasi\Environment\SymfonyEnvironment;
+use Discord\Base\Configuration\Configuration;
+use Discord\Base\Configuration\Processor;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -45,10 +44,7 @@ class Bot
      */
     public function __construct(array $configuration, ContainerBuilder $containerBuilder = null)
     {
-        $resolver = new OptionsResolver();
-        $this->setDefaults($resolver);
-
-        $configuration = $resolver->resolve($configuration);
+        $configuration = Processor::process($configuration);
 
         $env = new SymfonyEnvironment();
         if ($env->isDebug()) {
@@ -67,22 +63,5 @@ class Bot
     public function getKernel()
     {
         return $this->kernel;
-    }
-
-    /**
-     * @param OptionsResolver $resolver
-     */
-    protected function setDefaults(OptionsResolver $resolver)
-    {
-        $resolver->setRequired(
-            ['name', 'version', 'modules', 'admin_id', 'token', 'log_dir', 'cache_dir', 'author']
-        );
-
-        $resolver->setDefault('status', '');
-        $resolver->setDefault('prefix', '!');
-
-        $resolver->setNormalizer('admin_id', function (Options $options, $value) {
-            return (string) $value;
-        });
     }
 }

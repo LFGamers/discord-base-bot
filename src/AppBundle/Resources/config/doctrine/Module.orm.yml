@@ -1,0 +1,19 @@
+Discord\Base\AppBundle\Model\Module:
+    type: entity
+    table: module
+    indexes:
+        name_index:
+            columns: [ name ]
+        default_enabled_index:
+            columns: [ defaultEnabled ]
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        name:
+            unique: true
+            type: string
+            length: 256
+        defaultEnabled:
+            type: boolean

@@ -1,0 +1,39 @@
+Discord\Base\AppBundle\Model\Ignored:
+    type: document
+    inheritanceType: SINGLE_COLLECTION
+    discriminatorField: type
+    discriminatorMap:
+        ignored: Discord\Base\AppBundle\Model\Ignored
+        channel: Discord\Base\AppBundle\Model\Ignored\IgnoredChannel
+        server:  Discord\Base\AppBundle\Model\Ignored\IgnoredServer
+        user:    Discord\Base\AppBundle\Model\Ignored\IgnoredUser
+    collection: ignored
+    indexes:
+        type_identifier_index:
+            keys:
+                type: asc
+                identifier: asc
+            options:
+                unique: true
+                dropDups: true
+                safe: true
+        type_index:
+            keys:
+                type: asc
+        identifier_index:
+            keys:
+                identifier: asc
+        ignored_index:
+            keys:
+                ignored: asc
+        identifier_ignored_index:
+            keys:
+                identifier: asc
+                ignored: asc
+    fields:
+        id:
+            id: true
+        identifier:
+            type: string
+        ignored:
+            type: boolean

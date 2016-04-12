@@ -1,0 +1,36 @@
+Discord\Base\AppBundle\Model\BaseServer:
+    type: entity
+    table: base_server
+    indexes:
+        identifier_index:
+            columns: [ identifier ]
+        owner_index:
+            columns: [ owner ]
+        prefix_index:
+            columns: [ prefix ]
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        identifier:
+            unique: true
+            type: string
+            length: 64
+        owner:
+            type: string
+            length: 64
+        prefix:
+            type: string
+            length: 8
+    manyToMany:
+        modules:
+            targetEntity: Discord\Base\AppBundle\Model\Module
+            joinTable:
+                name: server_modules
+                joinColumns:
+                    server_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    module_id:
+                        referencedColumnName: id

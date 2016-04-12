@@ -11,18 +11,26 @@
         "php":                                  "^5.6|^7.0",
         "aequasi/environment":                  "^2.0",
         "doctrine/doctrine-bundle":             "^1.4",
-        "doctrine/orm":                         "^2.4",
         "incenteev/composer-parameter-handler": "^2.0",
         "regex-guard/regex-guard":              "^1.1",
         "sensio/distribution-bundle":           "^5.0",
         "symfony/monolog-bundle":               "^2.4|^3.0",
         "symfony/symfony":                      "^2.8|^3.0",
-        "symfony/var-dumper":                   "^2.8|^3.0",
-        "team-reflex/discord-php":              "dev-bot-api"
+        "team-reflex/discord-php":              "dev-bot-api",
+        "ad7six/dsn":                           "^0.4.0"
+    },
+    "suggest":           {
+        "doctrine/orm":                "^2.4",
+        "doctrine/mongodb-odm":        "^1.0",
+        "doctrine/mongodb-odm-bundle": "^3.1"
     },
     "require-dev":       {
-        "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge":  "^2.8|^3.0"
+        "sensio/generator-bundle":     "^3.0",
+        "symfony/var-dumper":          "^2.8|^3.0",
+        "symfony/phpunit-bridge":      "^2.8|^3.0",
+        "doctrine/orm":                "^2.4",
+        "doctrine/mongodb-odm":        "^1.0",
+        "doctrine/mongodb-odm-bundle": "^3.1"
     },
     "minimum-stability": "dev",
     "prefer-stable":     true

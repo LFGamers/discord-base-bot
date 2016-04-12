@@ -1,0 +1,25 @@
+Discord\Base\AppBundle\Model\Module:
+    type: document
+    collection: modules
+    indexes:
+        name_index:
+            keys:
+                name: asc
+            options:
+                unique: true
+                dropDups: true
+                safe: true
+        default_enabled_index:
+            keys:
+                defaultEnabled: asc
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        id:
+            id: true
+        name:
+            type: string
+        defaultEnabled:
+            type: boolean

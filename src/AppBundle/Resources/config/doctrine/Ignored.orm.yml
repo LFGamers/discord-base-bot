@@ -1,0 +1,37 @@
+Discord\Base\AppBundle\Model\Ignored:
+    type: entity
+    inheritanceType: SINGLE_TABLE
+    discriminatorColumn:
+        name: type
+        type: string
+    discriminatorMap:
+        ignored: Discord\Base\AppBundle\Model\Ignored
+        channel: Discord\Base\AppBundle\Model\Ignored\IgnoredChannel
+        server:  Discord\Base\AppBundle\Model\Ignored\IgnoredServer
+        user:    Discord\Base\AppBundle\Model\Ignored\IgnoredUser
+    table: ignored
+    indexes:
+        type_identifier_index:
+            columns: [ type, identifier ]
+        type_index:
+            columns: [ type ]
+        identifier_index:
+            columns: [ identifier ]
+        ignored_index:
+            columns: [ ignored ]
+        identifier_ignored_index:
+            columns: [ identifier, ignored ]
+    uniqueConstraints:
+        type_identifier_index:
+            columns: [ type, identifier ]
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        identifier:
+            unique: true
+            type: string
+            length: 64
+        ignored:
+            type: boolean

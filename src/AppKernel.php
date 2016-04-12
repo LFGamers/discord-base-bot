@@ -14,10 +14,12 @@ namespace Discord\Base;
 use Discord\Base\AppBundle\AppBundle;
 use Discord\Base\CoreBundle\CoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
 use Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle;
 use Symfony\Bundle\DebugBundle\DebugBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\MonologBundle\MonologBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -25,12 +27,16 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  */
 class AppKernel extends Kernel
 {
+    use MicroKernelTrait;
+
     /**
      * @var array
      */
@@ -116,6 +122,10 @@ class AppKernel extends Kernel
             new AppBundle(),
         ];
 
+        if (class_exists(DoctrineMongoDBBundle::class) && array_key_exists('doctrine_mongodb', $this->configuration)) {
+            $bundles[] = new DoctrineMongoDBBundle();
+        }
+
         $bundles = array_merge($bundles, $modules);
 
         if (in_array($this->getEnvironment(), ['dev'], true)) {
@@ -128,22 +138,13 @@ class AppKernel extends Kernel
     }
 
     /**
-     * @param LoaderInterface $loader
-     */
-    public function registerContainerConfiguration(LoaderInterface $loader)
-    {
-        $configDir = $this->getKernelParameters()['kernel.config_dir'];
-        $loader->load($configDir.'/config.yml');
-    }
-
-    /**
      * {@inheritdoc}
      *
      * @api
      */
     public function getCacheDir()
     {
-        return $this->getRootDir().'/../var/cache';
+        return $this->configuration['parameters']['cache_dir'];
     }
 
     /**
@@ -153,28 +154,56 @@ class AppKernel extends Kernel
      */
     public function getLogDir()
     {
-        return $this->getRootDir().'/../var/logs';
+        return $this->configuration['parameters']['log_dir'];
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    protected function getKernelParameters()
+    protected function configureRoutes(RouteCollectionBuilder $routes)
     {
+        // No Routes
+    }
+
+    /**
+     * Configures the container.
+     *
+     * You can register extensions:
+     *
+     * $c->loadFromExtension('framework', array(
+     *     'secret' => '%secret%'
+     * ));
+     *
+     * Or services:
+     *
+     * $c->register('halloween', 'FooBundle\HalloweenProvider');
+     *
+     * Or parameters:
+     *
+     * $c->setParameter('halloween', 'lot of fun');
+     *
+     * @param ContainerBuilder $c
+     * @param LoaderInterface  $loader
+     */
+    protected function configureContainer(ContainerBuilder $c, LoaderInterface $loader)
+    {
+        $c->setParameter('kernel.config_dir', realpath(__DIR__.'/../config/'));
+        $configDir = $c->getParameter('kernel.config_dir');
+        $loader->load($configDir.'/config.yml');
+
         $configuration = $this->configuration;
         unset($configuration['modules']);
 
-        $configuration['kernel.modules'] = [];
-        foreach ($this->modules as $module) {
-            $configuration['kernel.modules'][] = get_class($module);
+        $c->setParameter('kernel.modules', array_map('get_class', $this->modules));
+        
+        foreach ($configuration as $key => $values) {
+            if ($key === 'parameters') {
+                foreach ($values as $name => $value) {
+                    $c->setParameter($name, $value);
+                }
+            } else {
+                $c->loadFromExtension($key, $values);
+            }
         }
-
-        return array_merge(
-            $configuration,
-            [
-                'kernel.config_dir' => realpath(__DIR__.'/../config/'),
-            ],
-            parent::getKernelParameters()
-        );
     }
 }

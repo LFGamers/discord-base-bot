@@ -11,6 +11,7 @@
 
 namespace Discord\Base\AppBundle\Command;
 
+use Discord\Base\AppBundle\Discord;
 use Discord\WebSockets\WebSocket;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -70,8 +71,12 @@ class RunCommand extends ContainerAwareCommand
 
         $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
 
-        /** @var WebSocket $ws */
-        $ws = $this->getContainer()->get('discord')->ws;
+        /**
+         * @var Discord $discord
+         * @var WebSocket $ws
+         */
+        $discord = $this->getContainer()->get('discord');
+        $ws = $discord->ws;
 
         $ws->on('error', [$this, 'logError']);
         //$ws->on('raw', [$this, 'logEvent']);
@@ -95,7 +100,7 @@ class RunCommand extends ContainerAwareCommand
 
         $ws->on(
             'ready',
-            function () use ($ws, &$servers, $progress) {
+            function () use ($ws, $discord, &$servers, $progress) {
                 $this->updateServerFile($servers);
                 if ($progress !== null) {
                     $progress->finish();
@@ -104,6 +109,11 @@ class RunCommand extends ContainerAwareCommand
 
                 $this->output->success('Bot is ready!');
                 $this->getContainer()->get('listener.message')->listen();
+
+                $status = $this->getContainer()->getParameter('status');
+                if (!empty($status)) {
+                    $discord->client->updatePresence($ws, $status, false);
+                }
                 //$ws->on('message', [$this, 'onMessage']);
             }
         );

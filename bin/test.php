@@ -24,15 +24,29 @@ set_time_limit(0);
 
 $bot = Bot::create(
     [
-        'name'      => 'Test Bot',
-        'version'   => '0.0.1',
-        'author'    => 'Aaron',
-        'log_dir'   => __DIR__.'/../var/logs/',
-        'cache_dir' => __DIR__.'/../var/cache/',
-        'admin_id'  => getenv('ADMIN_ID'),
-        'token'     => getenv('TOKEN'),
-        'modules'   => [],
-        'prefix'    => '%',
+        'modules'    => [],
+        'parameters' => [
+            'name'      => 'Test Bot',
+            'version'   => '0.0.1',
+            'author'    => 'Aaron',
+            'log_dir'   => __DIR__.'/../var/logs/',
+            'cache_dir' => __DIR__.'/../var/cache/',
+            'admin_id'  => getenv('ADMIN_ID'),
+            'token'     => getenv('TOKEN'),
+            'prefix'    => '%',
+            'status'    => 'Discord Base Bot',
+        ],
+        'databases'  => [
+            'main' => getenv('MAIN_DATABASE'),
+            'mysql' => [
+                'enabled' => !empty(getenv('MYSQL_DSN')),
+                'dsn'     => getenv('MYSQL_DSN')
+            ],
+            'mongo' => [
+                'enabled' => !empty(getenv('MONGO_DSN')),
+                'dsn'     => getenv('MONGO_DSN')
+            ]
+        ]
     ]
 );
 
