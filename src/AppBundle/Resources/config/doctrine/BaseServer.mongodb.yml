@@ -24,6 +24,6 @@ Discord\Base\AppBundle\Model\BaseServer:
             type: string
         prefix:
             type: string
-    referenceMany:
+    embedMany:
         modules:
-            targetDocument: Discord\Base\AppBundle\Model\Module
+            targetDocument: Discord\Base\AppBundle\Model\ServerModule

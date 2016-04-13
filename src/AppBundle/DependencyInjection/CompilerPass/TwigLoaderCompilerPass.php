@@ -42,7 +42,7 @@ class TwigLoaderCompilerPass implements CompilerPassInterface
             $container->getDefinition('twig.loader')
                 ->addMethodCall(
                     'addPath',
-                    [$dir.'/Resources/views/', str_replace('Bundle', '', $ref->getShortName())]
+                    [$dir.'/Resources/views/', str_replace('Module', '', $ref->getShortName())]
                 );
         }
     }

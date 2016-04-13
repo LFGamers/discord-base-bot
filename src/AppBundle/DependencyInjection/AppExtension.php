@@ -31,5 +31,12 @@ class AppExtension extends Extension
         foreach (glob($location.'/*.xml') as $file) {
             $loader->load($file);
         }
+
+        $container->setAlias(
+            'default_manager',
+            $container->getParameter('main_database') === 'mysql'
+                ? 'doctrine.orm.default_entity_manager'
+                : 'doctrine_mongodb.odm.default_document_manager'
+        );
     }
 }

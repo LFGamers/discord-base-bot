@@ -17,7 +17,7 @@
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE
  */
-namespace Discord\Base\CoreBundle\BotCommand;
+namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
 

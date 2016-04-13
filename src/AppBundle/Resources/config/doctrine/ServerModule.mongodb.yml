@@ -1,0 +1,29 @@
+Discord\Base\AppBundle\Model\ServerModule:
+    type: embeddedDocument
+    indexes:
+        identity_index:
+            keys:
+                server: asc
+                module: asc
+            options:
+                unique: true
+                dropDups: true
+                safe: true
+        enabled_index:
+            keys:
+                enabled: asc
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        id:
+            id: true
+        enabled:
+            type: boolean
+
+    referenceOne:
+        server:
+            targetDocument: Discord\Base\AppBundle\Model\BaseServer
+        module:
+            targetDocument: Discord\Base\AppBundle\Model\Module

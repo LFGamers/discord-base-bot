@@ -23,14 +23,7 @@ Discord\Base\AppBundle\Model\BaseServer:
         prefix:
             type: string
             length: 8
-    manyToMany:
+    oneToMany:
         modules:
-            targetEntity: Discord\Base\AppBundle\Model\Module
-            joinTable:
-                name: server_modules
-                joinColumns:
-                    server_id:
-                        referencedColumnName: id
-                inverseJoinColumns:
-                    module_id:
-                        referencedColumnName: id
+            targetEntity: Discord\Base\AppBundle\Model\ServerModule
+            mappedBy: server

@@ -17,13 +17,28 @@
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE
  */
-namespace Discord\Base\CoreBundle;
+namespace Discord\Base\CoreModule;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Discord\Base\AbstractModule;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  */
-class CoreBundle extends Bundle
+class CoreModule extends AbstractModule
 {
+    /**
+     * @return boolean
+     */
+    public static function isDefaultEnabled()
+    {
+        return true;
+    }
+
+    /**
+     * @return boolean
+     */
+    public static function isDisableable()
+    {
+        return false;
+    }
 }

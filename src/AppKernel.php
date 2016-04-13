@@ -13,6 +13,7 @@ namespace Discord\Base;
 
 use Discord\Base\AppBundle\AppBundle;
 use Discord\Base\CoreBundle\CoreBundle;
+use Discord\Base\CoreModule\CoreModule;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
 use Sensio\Bundle\DistributionBundle\SensioDistributionBundle;
@@ -61,12 +62,22 @@ class AppKernel extends Kernel
     }
 
     /**
-     * @param \Symfony\Component\HttpKernel\Bundle\BundleInterface[] $modules
+     * @param AbstractModule[] $modules
      *
      * @return AppKernel
+     * @throws \Exception
      */
-    public function setModules($modules)
+    public function setModules(array $modules)
     {
+        foreach ($modules as $index => $module) {
+            $cls = new $module;
+            if (!($cls instanceof AbstractModule)) {
+                throw new \Exception("{$module} does not extend " . AbstractModule::class);
+            }
+
+            $modules[$index] = $cls;
+        }
+
         $this->modules = $modules;
 
         return $this;
@@ -107,12 +118,12 @@ class AppKernel extends Kernel
      */
     public function registerBundles()
     {
-        $modules = array_merge(
-            [new CoreBundle()],
-            $this->configuration['modules']
+        $this->setModules(
+            array_merge(
+                [CoreModule::class],
+                $this->configuration['modules']
+            )
         );
-
-        $this->setModules($modules);
 
         $bundles = [
             new FrameworkBundle(),
@@ -126,7 +137,7 @@ class AppKernel extends Kernel
             $bundles[] = new DoctrineMongoDBBundle();
         }
 
-        $bundles = array_merge($bundles, $modules);
+        $bundles = array_merge($bundles, $this->modules);
 
         if (in_array($this->getEnvironment(), ['dev'], true)) {
             $bundles[] = new DebugBundle();

@@ -39,7 +39,7 @@ class BaseServer
     protected $prefix;
 
     /**
-     * @var Module[]|ArrayCollection
+     * @var ServerModule[]|ArrayCollection
      */
     protected $modules;
 
@@ -62,7 +62,7 @@ class BaseServer
     /**
      * @param int|\MongoId $id
      *
-     * @return Module
+     * @return BaseServer
      */
     public function setId($id)
     {
@@ -132,7 +132,7 @@ class BaseServer
     }
 
     /**
-     * @return Module[]|ArrayCollection
+     * @return ServerModule[]|ArrayCollection
      */
     public function getModules()
     {
@@ -140,7 +140,7 @@ class BaseServer
     }
 
     /**
-     * @param Module[]|ArrayCollection $modules
+     * @param ServerModule[]|ArrayCollection $modules
      *
      * @return BaseServer
      */
@@ -149,5 +149,35 @@ class BaseServer
         $this->modules = new ArrayCollection($modules);
 
         return $this;
+    }
+
+    /**
+     * @param ServerModule $module
+     *
+     * @return BaseServer
+     */
+    public function addModule(ServerModule $module)
+    {
+        if (!$this->hasModule($module->getModule())) {
+            $this->modules->add($module);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Module $module
+     *
+     * @return bool
+     */
+    public function hasModule(Module $module)
+    {
+        foreach ($this->modules as $serverModule) {
+            if ($serverModule->getModule()->getId() === $module->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

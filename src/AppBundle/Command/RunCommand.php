@@ -12,11 +12,19 @@
 namespace Discord\Base\AppBundle\Command;
 
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Model\BaseServer;
+use Discord\Base\AppBundle\Model\Module;
+use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\WebSockets\WebSocket;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -71,15 +79,16 @@ class RunCommand extends ContainerAwareCommand
 
         $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
 
+        $this->updateModules();
+
         /**
-         * @var Discord $discord
+         * @var Discord   $discord
          * @var WebSocket $ws
          */
         $discord = $this->getContainer()->get('discord');
-        $ws = $discord->ws;
+        $ws      = $discord->ws;
 
         $ws->on('error', [$this, 'logError']);
-        //$ws->on('raw', [$this, 'logEvent']);
 
         $servers  = 0;
         $progress = null;
@@ -108,22 +117,17 @@ class RunCommand extends ContainerAwareCommand
                 }
 
                 $this->output->success('Bot is ready!');
-                $this->getContainer()->get('listener.message')->listen();
+
+                $this->createServerManagers();
 
                 $status = $this->getContainer()->getParameter('status');
                 if (!empty($status)) {
                     $discord->client->updatePresence($ws, $status, false);
                 }
-                //$ws->on('message', [$this, 'onMessage']);
             }
         );
 
         $ws->run();
-    }
-
-    public function onMessage($message)
-    {
-        $this->output->text("Message from {$message->author->username}: {$message->content}");
     }
 
     /**
@@ -134,11 +138,69 @@ class RunCommand extends ContainerAwareCommand
         $this->output->error($error);
     }
 
-    /**
-     * @param $data
-     */
-    public function logEvent($data)
+    private function createServerManagers()
     {
-        echo $data->t.PHP_EOL;
+        /** @var Discord $discord */
+        $discord = $this->getContainer()->get('discord');
+
+        $factory = $this->getContainer()->get('factory.server_manager');
+        foreach ($discord->client->guilds as $server) {
+            $factory->create($server);
+        }
+    }
+
+    private function updateModules()
+    {
+        $this->output->text("Attempting to updating modules");
+
+        /** @type EntityManager|DocumentManager $manager */
+        $manager = $this->getContainer()->get('default_manager');
+        $repo    = $manager->getRepository('App:Module');
+        foreach ($this->getContainer()->getParameter('kernel.modules') as $module) {
+            if (empty($repo->findOneBy(['name' => $module::getModuleName()]))) {
+                $this->output->text("New module discovered. Adding to database.");
+
+                $this->addModule($module);
+            }
+        }
+
+        /**
+         * @var Module[]     $modules
+         * @var BaseServer[] $servers
+         */
+        $modules = $manager->getRepository('App:Module')->findAll();
+        $servers = $manager->getRepository('App:BaseServer')->findAll();
+        foreach ($servers as $server) {
+            foreach ($modules as $module) {
+                if (!$server->hasModule($module)) {
+                    $serverModule = new ServerModule();
+                    $serverModule->setModule($module);
+                    $serverModule->setServer($server);
+                    $serverModule->setEnabled($module->getDefaultEnabled());
+
+                    $manager->persist($serverModule);
+
+                    $server->addModule($serverModule);
+                    $manager->persist($server);
+                }
+            }
+        }
+
+        $manager->flush();
+    }
+
+    private function addModule($module)
+    {
+        /** @type EntityManager|DocumentManager $manager */
+        $manager        = $this->getContainer()->get('default_manager');
+        $name           = $module::getModuleName();
+        $defaultEnabled = $module::isDefaultEnabled();
+
+        $dbModule = new Module();
+        $dbModule->setName($name);
+        $dbModule->setDefaultEnabled($defaultEnabled);
+        $manager->persist($dbModule);
+
+        $manager->flush();
     }
 }

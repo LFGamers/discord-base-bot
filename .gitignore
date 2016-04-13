@@ -1,3 +1,6 @@
 vendor
 var
 composer.lock
+html
+puphpet/files/dot/ssh
+bin/*.sh

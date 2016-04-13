@@ -1,0 +1,19 @@
+Discord\Base\AppBundle\Model\ServerModule:
+    type: entity
+    table: server_module
+    id:
+        id:
+            type: integer
+            generator: { strategy: AUTO }
+    fields:
+        enabled:
+            type: boolean
+    manyToOne:
+        server:
+            targetEntity: Discord\Base\AppBundle\Model\BaseServer
+            inversedBy: modules
+        module:
+            targetEntity: Discord\Base\AppBundle\Model\Module
+    uniqueConstraints:
+        identity_index:
+            columns: [ server_id, module_id ]
