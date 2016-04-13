@@ -97,7 +97,7 @@ class ServerModule
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabled()
     {
@@ -105,7 +105,7 @@ class ServerModule
     }
 
     /**
-     * @param boolean $enabled
+     * @param bool $enabled
      *
      * @return ServerModule
      */

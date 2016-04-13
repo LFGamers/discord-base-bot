@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-base-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -28,7 +28,6 @@ use Doctrine\ORM\EntityRepository;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -113,7 +112,7 @@ class ServerManager
 
     public function onMessage(Message $message)
     {
-        $this->logger->info("New Message for {$this->clientServer->name}: " . $message->content);
+        $this->logger->info("New Message for {$this->clientServer->name}: ".$message->content);
     }
 
     public function onServerDelete()
@@ -182,8 +181,9 @@ class ServerManager
     /**
      * @param $model
      *
-     * @return DocumentRepository|EntityRepository
      * @throws \Exception
+     *
+     * @return DocumentRepository|EntityRepository
      */
     protected function getRepository($model)
     {
@@ -215,8 +215,9 @@ class ServerManager
     }
 
     /**
-     * @return DocumentManager|EntityManager
      * @throws \Exception
+     *
+     * @return DocumentManager|EntityManager
      */
     protected function getManager()
     {
