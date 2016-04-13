@@ -12,7 +12,7 @@
 use Discord\Base\Bot;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
-/**
+/*
  * @var Composer\Autoload\ClassLoader
  */
 $loader = require __DIR__.'/../vendor/autoload.php';
@@ -37,16 +37,16 @@ $bot = Bot::create(
             'status'    => 'Discord Base Bot',
         ],
         'databases'  => [
-            'main' => getenv('MAIN_DATABASE'),
+            'main'  => getenv('MAIN_DATABASE'),
             'mysql' => [
                 'enabled' => !empty(getenv('MYSQL_DSN')),
-                'dsn'     => getenv('MYSQL_DSN')
+                'dsn'     => getenv('MYSQL_DSN'),
             ],
             'mongo' => [
                 'enabled' => !empty(getenv('MONGO_DSN')),
-                'dsn'     => getenv('MONGO_DSN')
-            ]
-        ]
+                'dsn'     => getenv('MONGO_DSN'),
+            ],
+        ],
     ]
 );
 

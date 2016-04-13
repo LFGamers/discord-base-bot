@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
@@ -9,12 +9,19 @@
  * with this source code in the file LICENSE
  */
 
+/**
+ * This file is part of discord-base-bot.
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
 namespace Discord\Base\Configuration;
 
 use AD7six\Dsn\Db\MysqlDsn;
 use AD7six\Dsn\Dsn;
 use Symfony\Component\Config\Definition\Processor as SymfonyProcessor;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -25,7 +32,7 @@ abstract class Processor
     {
         $processor = new SymfonyProcessor();
 
-        $processedConfiguration = $processor->processConfiguration(new Configuration, ['config' => $configuration]);
+        $processedConfiguration = $processor->processConfiguration(new Configuration(), ['config' => $configuration]);
 
         $validConfig = Validator::validate($processedConfiguration);
 
@@ -46,7 +53,7 @@ abstract class Processor
         unset($config['databases']);
 
         if ($databases['mysql']['enabled']) {
-            /** @type MysqlDsn $mysql */
+            /** @var MysqlDsn $mysql */
             $mysql = Dsn::parse($databases['mysql']['dsn'])->toArray();
 
             $mapping = [];
@@ -55,8 +62,8 @@ abstract class Processor
                     'AppBundle' => [
                         'type'   => 'yml',
                         'prefix' => 'Discord\Base\AppBundle\Model',
-                        'alias'  => 'App'
-                    ]
+                        'alias'  => 'App',
+                    ],
                 ];
             }
 
@@ -72,7 +79,7 @@ abstract class Processor
                         ],
                     ],
                 ],
-                'orm'  => ['auto_mapping' => false, 'mappings' => $mapping]
+                'orm'  => ['auto_mapping' => false, 'mappings' => $mapping],
             ];
         }
 
@@ -83,18 +90,18 @@ abstract class Processor
                     'AppBundle' => [
                         'type'   => 'yml',
                         'prefix' => 'Discord\Base\AppBundle\Model',
-                        'alias'  => 'App'
-                    ]
+                        'alias'  => 'App',
+                    ],
                 ];
             }
 
             $config['doctrine_mongodb'] = [
                 'connections'       => [
                     'default' => [
-                        'server' => $databases['mongo']['dsn']
+                        'server' => $databases['mongo']['dsn'],
                     ],
                 ],
-                'document_managers' => ['default' => ['auto_mapping' => false, 'mappings' => $mapping]]
+                'document_managers' => ['default' => ['auto_mapping' => false, 'mappings' => $mapping]],
             ];
         }
     }

@@ -12,7 +12,6 @@
 namespace Discord\Base;
 
 use Aequasi\Environment\SymfonyEnvironment;
-use Discord\Base\Configuration\Configuration;
 use Discord\Base\Configuration\Processor;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Debug\Debug;
