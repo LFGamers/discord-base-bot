@@ -17,14 +17,11 @@ use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\WebSockets\WebSocket;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -82,7 +79,7 @@ class RunCommand extends ContainerAwareCommand
         $this->updateModules();
 
         /**
-         * @var Discord   $discord
+         * @var Discord
          * @var WebSocket $ws
          */
         $discord = $this->getContainer()->get('discord');
@@ -152,21 +149,21 @@ class RunCommand extends ContainerAwareCommand
 
     private function updateModules()
     {
-        $this->output->text("Attempting to updating modules");
+        $this->output->text('Attempting to updating modules');
 
-        /** @type EntityManager|DocumentManager $manager */
+        /** @var EntityManager|DocumentManager $manager */
         $manager = $this->getContainer()->get('default_manager');
         $repo    = $manager->getRepository('App:Module');
         foreach ($this->getContainer()->getParameter('kernel.modules') as $module) {
             if (empty($repo->findOneBy(['name' => $module::getModuleName()]))) {
-                $this->output->text("New module discovered. Adding to database.");
+                $this->output->text('New module discovered. Adding to database.');
 
                 $this->addModule($module);
             }
         }
 
         /**
-         * @var Module[]     $modules
+         * @var Module[]
          * @var BaseServer[] $servers
          */
         $modules = $manager->getRepository('App:Module')->findAll();
@@ -192,7 +189,7 @@ class RunCommand extends ContainerAwareCommand
 
     private function addModule($module)
     {
-        /** @type EntityManager|DocumentManager $manager */
+        /** @var EntityManager|DocumentManager $manager */
         $manager        = $this->getContainer()->get('default_manager');
         $name           = $module::getModuleName();
         $defaultEnabled = $module::isDefaultEnabled();

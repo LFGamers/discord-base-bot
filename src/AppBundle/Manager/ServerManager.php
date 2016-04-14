@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-base-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -19,11 +19,7 @@ use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Discord\Base\Request;
-use Discord\Parts\Channel\Channel;
-use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
-use Discord\Parts\User\Member;
-use Discord\WebSockets\Event;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ORM\EntityManager;
@@ -31,7 +27,6 @@ use Doctrine\ORM\EntityRepository;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -99,10 +94,16 @@ class ServerManager
         $this->dispatcher->dispatch('manager.server.loaded', ServerManagerLoaded::create($this));
     }
 
+    /**
+     *
+     */
     protected function initialize()
     {
     }
 
+    /**
+     * @param ServerEvent $event
+     */
     public function onServerEvent(ServerEvent $event)
     {
         if ($event->getServer()->getAttribute('id') != $this->clientServer->getAttribute('id')) {
@@ -115,6 +116,9 @@ class ServerManager
         }
     }
 
+    /**
+     * @param array $data
+     */
     protected function onMessage(array $data)
     {
         /** @var Request $request */
@@ -128,6 +132,9 @@ class ServerManager
         }
     }
 
+    /**
+     * @param Guild $clientServer
+     */
     public function updateBaseServer(Guild $clientServer)
     {
         $this->databaseServer->setIdentifier($clientServer->getAttribute('id'));
@@ -162,8 +169,9 @@ class ServerManager
     /**
      * @param $model
      *
-     * @return DocumentRepository|EntityRepository
      * @throws \Exception
+     *
+     * @return DocumentRepository|EntityRepository
      */
     protected function getRepository($model)
     {
@@ -173,7 +181,7 @@ class ServerManager
     /**
      * @param BaseServer $server
      *
-     * @return array|\Discord\Base\AppBundle\Model\Module[]
+     * @return array|Module[]
      */
     protected function defaultModules(BaseServer $server)
     {
@@ -195,8 +203,9 @@ class ServerManager
     }
 
     /**
-     * @return DocumentManager|EntityManager
      * @throws \Exception
+     *
+     * @return DocumentManager|EntityManager
      */
     protected function getManager()
     {

@@ -12,7 +12,6 @@
 namespace Discord\Base;
 
 use Discord\Base\AppBundle\AppBundle;
-use Discord\Base\CoreBundle\CoreBundle;
 use Discord\Base\CoreModule\CoreModule;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle;
@@ -63,15 +62,16 @@ class AppKernel extends Kernel
     /**
      * @param AbstractModule[] $modules
      *
-     * @return AppKernel
      * @throws \Exception
+     *
+     * @return AppKernel
      */
     public function setModules(array $modules)
     {
         foreach ($modules as $index => $module) {
-            $cls = new $module;
+            $cls = new $module();
             if (!($cls instanceof AbstractModule)) {
-                throw new \Exception("{$module} does not extend " . AbstractModule::class);
+                throw new \Exception("{$module} does not extend ".AbstractModule::class);
             }
 
             $modules[$index] = $cls;

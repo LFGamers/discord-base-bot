@@ -27,7 +27,7 @@ use Discord\Base\AbstractModule;
 class CoreModule extends AbstractModule
 {
     /**
-     * @return boolean
+     * @return bool
      */
     public static function isDefaultEnabled()
     {
@@ -35,7 +35,7 @@ class CoreModule extends AbstractModule
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public static function isDisableable()
     {
