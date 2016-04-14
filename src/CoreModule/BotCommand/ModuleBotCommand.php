@@ -1,6 +1,16 @@
 <?php
-/**
+
+/*
  * This file is part of discord-base-bot
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
+
+/**
+ * This file is part of discord-base-bot.
  *
  * Copyright (c) 2016 Aaron Scherer <aequasi@gmail.com>
  *
@@ -28,7 +38,6 @@
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
-use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\Request;
 
@@ -46,7 +55,7 @@ class ModuleBotCommand extends AbstractBotCommand
             ->setDescription('Configure modules for the bot.')
             ->setAdminCommand(true)
             ->setHelp(
-                <<<EOF
+                <<<'EOF'
 The module command lets you list, enable, and disable modules for the given server
 
 `module list` Lists all module statuses for the current server
@@ -81,7 +90,7 @@ EOF
             $request->renderTemplate(
                 '@Core/module/list.twig',
                 [
-                    'server' => $request->getServerManager()->getDatabaseServer()
+                    'server' => $request->getServerManager()->getDatabaseServer(),
                 ]
             )
         );
