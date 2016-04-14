@@ -164,7 +164,7 @@ class RunCommand extends ContainerAwareCommand
         }
 
         /**
-         * @var Module[]     $modules
+         * @var Module[]
          * @var BaseServer[] $servers
          */
         $modules = $manager->getRepository('App:Module')->findAll();

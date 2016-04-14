@@ -1,6 +1,16 @@
 <?php
-/**
+
+/*
  * This file is part of discord-base-bot
+ *
+ * (c) Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE
+ */
+
+/**
+ * This file is part of discord-base-bot.
  *
  * Copyright (c) 2016 Aaron Scherer <aequasi@gmail.com>
  *
@@ -48,7 +58,7 @@ class IgnoreBotCommand extends AbstractBotCommand
             ->setDescription('Configure ignores for the bot.')
             ->setAdminCommand(true)
             ->setHelp(
-                <<<EOF
+                <<<'EOF'
 The ignore command lets you list, ignore, and unignore users, channels, and servers.
 
 `ignore list` Lists all ignores for the bot
@@ -112,7 +122,7 @@ EOF
     {
         $ignore = $this->setIgnored(empty($matches[1]), 'server', $request->getServer()->id);
 
-        $request->reply(($ignore ? 'Ignored' : 'Unignored') . ' ' . $request->getServer()->name);
+        $request->reply(($ignore ? 'Ignored' : 'Unignored').' '.$request->getServer()->name);
     }
 
     /**
@@ -125,7 +135,7 @@ EOF
 
         $request->reply(
             ($ignore ? 'Ignored' : 'Unignored').' '.
-            $request->getMentions()[0]->username . '#'.$request->getMentions()[0]->discriminator
+            $request->getMentions()[0]->username.'#'.$request->getMentions()[0]->discriminator
         );
     }
 
@@ -153,7 +163,7 @@ EOF
         $ignored = $repo->findOneBy(['identifier' => $identifier]);
         if (empty($ignored)) {
             $ignored = $type === 'user'
-                ? new IgnoredUser
+                ? new IgnoredUser()
                 : ($type === 'server' ? new IgnoredServer() : new IgnoredChannel());
 
             $ignored->setIdentifier($identifier);
@@ -210,7 +220,7 @@ EOF
         foreach ($this->discord->client->guilds as $guild) {
             foreach ($guild->members as $member) {
                 if ((string) $member->id === $userId) {
-                    return $member->username . '#' . $member->discriminator;
+                    return $member->username.'#'.$member->discriminator;
                 }
             }
         }

@@ -106,7 +106,7 @@ class Module
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isDisableable()
     {
@@ -114,7 +114,7 @@ class Module
     }
 
     /**
-     * @param boolean $disableable
+     * @param bool $disableable
      *
      * @return Module
      */
