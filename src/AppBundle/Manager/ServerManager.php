@@ -12,10 +12,13 @@
 namespace Discord\Base\AppBundle\Manager;
 
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Event\ServerEvent;
 use Discord\Base\AppBundle\Event\ServerManagerLoaded;
 use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\ServerModule;
+use Discord\Base\AppBundle\Repository\BotCommandRepository;
+use Discord\Base\Request;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
@@ -68,6 +71,11 @@ class ServerManager
     protected $databaseServer;
 
     /**
+     * @var BotCommandRepository
+     */
+    protected $commandRepository;
+
+    /**
      * ServerManager constructor.
      *
      * @param Container $container
@@ -75,16 +83,17 @@ class ServerManager
      */
     public function __construct(Container $container, Guild $server)
     {
-        $this->container  = $container;
-        $this->dispatcher = $container->get('event_dispatcher');
-        $this->discord    = $container->get('discord');
-        $this->logger     = $container->get('monolog.logger.bot');
+        $this->container         = $container;
+        $this->dispatcher        = $container->get('event_dispatcher');
+        $this->discord           = $container->get('discord');
+        $this->logger            = $container->get('monolog.logger.bot');
+        $this->commandRepository = $container->get('repository.command');
 
         $this->clientServer   = $server;
         $this->databaseServer = $this->fetchDatabaseServer();
 
         $this->updateBaseServer($this->clientServer);
-        $this->createListeners();
+        $this->dispatcher->addListener(ServerEvent::class, [$this, 'onServerEvent']);
 
         $this->initialize();
         $this->dispatcher->dispatch('manager.server.loaded', ServerManagerLoaded::create($this));
@@ -94,58 +103,29 @@ class ServerManager
     {
     }
 
-    protected function createListeners()
+    public function onServerEvent(ServerEvent $event)
     {
-        $ws = $this->discord->ws;
+        if ($event->getServer()->getAttribute('id') != $this->clientServer->getAttribute('id')) {
+            return;
+        }
 
-        $ws->on(Event::GUILD_UPDATE, [$this, 'updateBaseServer']);
-
-        $ws->on(Event::MESSAGE_CREATE, [$this, 'onMessage']);
-        $ws->on(Event::GUILD_DELETE, [$this, 'onServerDelete']);
-        $ws->on(Event::GUILD_UPDATE, [$this, 'onServerUpdate']);
-        $ws->on(Event::CHANNEL_CREATE, [$this, 'onChannelCreate']);
-        $ws->on(Event::CHANNEL_UPDATE, [$this, 'onChannelUpdate']);
-        $ws->on(Event::CHANNEL_DELETE, [$this, 'onChannelDelete']);
-        $ws->on(Event::GUILD_MEMBER_ADD, [$this, 'onMemberCreate']);
-        $ws->on(Event::GUILD_MEMBER_UPDATE, [$this, 'onMemberUpdate']);
-        $ws->on(Event::GUILD_MEMBER_REMOVE, [$this, 'onMemberDelete']);
+        $method = 'on'.ucfirst($event->getType());
+        if (method_exists($this, $method)) {
+            $this->$method($event->getData());
+        }
     }
 
-    public function onMessage(Message $message)
+    protected function onMessage(array $data)
     {
-        $this->logger->info("New Message for {$this->clientServer->name}: " . $message->content);
-    }
+        /** @var Request $request */
+        $request = $data['request'];
+        foreach ($this->commandRepository->all() as $command) {
+            $request->processCommand($command);
 
-    public function onServerDelete()
-    {
-    }
-
-    public function onServerUpdate(Guild $server)
-    {
-    }
-
-    public function onChannelCreate(Channel $channel)
-    {
-    }
-
-    public function onChannelUpdate(Channel $channel)
-    {
-    }
-
-    public function onChannelDelete(Channel $channel)
-    {
-    }
-
-    public function onMemberCreate(Member $member)
-    {
-    }
-
-    public function onMemberUpdate(Member $member)
-    {
-    }
-
-    public function onMemberDelete(Member $member)
-    {
+            if ($request->isHandled()) {
+                return;
+            }
+        }
     }
 
     public function updateBaseServer(Guild $clientServer)

@@ -20,6 +20,7 @@
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
+use Discord\Base\Request;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -36,26 +37,27 @@ class EvalBotCommand extends AbstractBotCommand
     /**
      * @return void
      */
-    public function handle()
+    public function setHandlers()
     {
         $this->responds('/^eval(?:\s+)```[a-z]*\n([\s\S]*)?\n```$/i', [$this, 'evalCode']);
         $this->responds('/^eval(?:\s+)`?([^`]*)?`?$/i', [$this, 'evalCode']);
     }
 
     /**
-     * @param array $matches
+     * @param Request $request
+     * @param array   $matches
      *
      * @return \React\EventLoop\Timer\Timer|\React\EventLoop\Timer\TimerInterface
      */
-    protected function evalCode(array $matches = [])
+    protected function evalCode(Request $request, array $matches = [])
     {
-        $message  = $this->reply('Executing Code');
+        $message  = $request->reply('Executing Code');
         $response = eval('return '.$matches[1]);
 
         if (is_array($response) || is_object($response)) {
             $response = json_decode($response, true);
         }
 
-        $this->updateMessage($message, "```\n{$response}\n```");
+        $request->updateMessage($message, "```\n{$response}\n```");
     }
 }

@@ -19,6 +19,7 @@
  */
 namespace Discord\Base\AppBundle\Repository;
 
+use Discord\Base\AbstractBotCommand;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -27,14 +28,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 class BotCommandRepository
 {
     /**
-     * @var array|ArrayCollection
+     * @var array|ArrayCollection|AbstractBotCommand[]
      */
     private $botCommands;
 
     /**
      * BotCommandRepository constructor.
      *
-     * @param array|ArrayCollection $botCommands
+     * @param array|ArrayCollection|AbstractBotCommand[] $botCommands
      */
     public function __construct(array $botCommands)
     {
@@ -42,7 +43,7 @@ class BotCommandRepository
     }
 
     /**
-     * @return array|ArrayCollection
+     * @return array|ArrayCollection|AbstractBotCommand[]
      */
     public function all()
     {

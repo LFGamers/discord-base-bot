@@ -5,9 +5,6 @@
         <service id="discord" class="Discord\Base\AppBundle\Discord">
             <argument>%token%</argument>
         </service>
-        <service id="factory.server_manager" class="Discord\Base\AppBundle\Factory\ServerManagerFactory">
-            <argument id="service_container" type="service" />
-        </service>
     </services>
 
 </container>

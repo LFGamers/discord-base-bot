@@ -20,6 +20,7 @@
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
+use Discord\Base\Request;
 use Discord\Parts\User\Member;
 use Doctrine\Common\Collections\ArrayCollection;
 
@@ -37,19 +38,19 @@ class StatsBotCommand extends AbstractBotCommand
     /**
      * @return void
      */
-    public function handle()
+    public function setHandlers()
     {
         $this->responds('/^stats$/i', [$this, 'renderStats']);
     }
 
     /**
-     *
+     * @param Request $request
      */
-    protected function renderStats()
+    protected function renderStats(Request $request)
     {
         $users = $this->getUsers();
         $data  = [
-            'servers'  => count($this->discord->client->guilds),
+            'servers'  => count($request->getDiscord()->client->guilds),
             'channels' => $this->getChannelCount(),
             'users'    => $users->count(),
             'online'   => count(
@@ -59,11 +60,11 @@ class StatsBotCommand extends AbstractBotCommand
                     }
                 )
             ),
-            'channel'  => $this->isPrivateMessage() ? [] : [
-                'channels' => count($this->getServer()->channels),
-                'users'    => count($this->getServer()->members),
+            'channel'  => $request->isPrivateMessage() ? [] : [
+                'channels' => count($request->getServer()->channels),
+                'users'    => count($request->getServer()->members),
                 'online'   => count(
-                    $this->getServer()->getMembersAttribute()->filter(
+                    $request->getServer()->getMembersAttribute()->filter(
                         function (Member $user) {
                             return $user->status !== 'offline';
                         }
@@ -72,7 +73,7 @@ class StatsBotCommand extends AbstractBotCommand
             ],
         ];
 
-        $this->reply($this->renderTemplate('@Core/stats.twig', $data));
+        $request->reply($request->renderTemplate('@Core/stats.twig', $data));
     }
 
     /**

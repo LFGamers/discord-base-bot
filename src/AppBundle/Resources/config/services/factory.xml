@@ -1,0 +1,17 @@
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="factory.server_manager" class="Discord\Base\AppBundle\Factory\ServerManagerFactory">
+            <argument id="service_container" type="service"/>
+        </service>
+        <service id="factory.request" class="Discord\Base\AppBundle\Factory\RequestFactory">
+            <argument id="discord" type="service"/>
+            <argument id="monolog.logger.bot" type="service"/>
+            <argument id="twig" type="service"/>
+            <argument>%admin_id%</argument>
+            <argument>%prefix%</argument>
+        </service>
+    </services>
+
+</container>

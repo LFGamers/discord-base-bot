@@ -20,6 +20,9 @@
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
+use Discord\Base\Request;
+use React\EventLoop\Timer\Timer;
+use React\EventLoop\Timer\TimerInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -36,28 +39,30 @@ class RestartBotCommand extends AbstractBotCommand
     /**
      * @return void
      */
-    public function handle()
+    public function setHandlers()
     {
         $this->responds('/^restart ?(\d+)?$/i', [$this, 'restart']);
     }
 
     /**
-     * @param array $matches
+     * @param Request $request
+     * @param array   $matches
      *
-     * @return \React\EventLoop\Timer\Timer|\React\EventLoop\Timer\TimerInterface
+     * @return Timer|TimerInterface
      */
-    protected function restart(array $matches = [])
+    protected function restart(Request $request, array $matches = [])
     {
         $time = isset($matches[1]) ? $matches[1] : 0;
         if ($time > 0) {
             $this->logger->info("Restarting in ${time} seconds.");
 
-            return $this->runAfter($time, function () {
-                $this->restart();
+            return $request->runAfter($time, function () use ($request) {
+                $this->restart($request);
             });
         }
 
-        $this->logger->info('Restarting!');
+        $request->getLogger()->info('Restarting!');
+        $request->reply("Restarting");
         die(1);
     }
 }

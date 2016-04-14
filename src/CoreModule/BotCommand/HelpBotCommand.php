@@ -20,6 +20,7 @@
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
+use Discord\Base\Request;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
@@ -36,21 +37,21 @@ class HelpBotCommand extends AbstractBotCommand
     /**
      * @return void
      */
-    public function handle()
+    public function setHandlers()
     {
         $this->responds('/^help$/i', [$this, 'renderHelp']);
     }
 
     /**
-     *
+     * @param Request $request
      */
-    protected function renderHelp()
+    protected function renderHelp(Request $request)
     {
         $modules = $this->getModuleCommands();
-        $this->reply($this->renderTemplate('@Core/help/main.twig'));
+        $request->reply($request->renderTemplate('@Core/help/main.twig'));
         foreach ($modules as $name => $commands) {
-            $this->reply(
-                $this->renderTemplate(
+            $request->reply(
+                $request->renderTemplate(
                     '@Core/help/module.twig',
                     [
                         'module' => [

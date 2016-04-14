@@ -118,6 +118,7 @@ class RunCommand extends ContainerAwareCommand
 
                 $this->output->success('Bot is ready!');
 
+                $this->getContainer()->get('listener.discord')->listen();
                 $this->createServerManagers();
 
                 $status = $this->getContainer()->getParameter('status');
