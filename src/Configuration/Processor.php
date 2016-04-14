@@ -28,8 +28,19 @@ use Symfony\Component\Config\Definition\Processor as SymfonyProcessor;
  */
 abstract class Processor
 {
+    /**
+     * @param array $configuration
+     *
+     * @return array
+     */
     public static function process(array $configuration)
     {
+        if (!isset($configuration['cache'])) {
+            $configuration['cache'] = self::getDefaultCache();
+        }
+        $configuration['cache_adapter'] = $configuration['cache'];
+        unset($configuration['cache']);
+
         $processor = new SymfonyProcessor();
 
         $processedConfiguration = $processor->processConfiguration(new Configuration(), ['config' => $configuration]);
@@ -41,6 +52,11 @@ abstract class Processor
         return $validConfig;
     }
 
+    /**
+     * @param $config
+     *
+     * @throws \Exception
+     */
     private static function prepareDoctrine(&$config)
     {
         $databases = $config['databases'];
@@ -104,5 +120,19 @@ abstract class Processor
                 'document_managers' => ['default' => ['auto_mapping' => false, 'mappings' => $mapping]],
             ];
         }
+    }
+
+    /**
+     * @return array
+     */
+    private static function getDefaultCache()
+    {
+        return [
+            'providers' => [
+                'array' => [
+                    'factory' => 'cache.factory.array',
+                ],
+            ],
+        ];
     }
 }

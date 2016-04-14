@@ -36,6 +36,26 @@ $bot = Bot::create(
             'prefix'    => '%',
             'status'    => 'Discord Base Bot',
         ],
+        'cache' => [
+            'providers' => [
+                'array' => [
+                    'factory' => 'cache.factory.array',
+                ],
+                'redis' => [
+                    'factory' => 'cache.factory.redis',
+                    'options' => ['dsn' => getenv('REDIS_DSN')]
+                ],
+                'chain' => [
+                    'factory' => 'cache.factory.chain',
+                    'options' => [
+                        'services' => [
+                            "@cache.provider.array",
+                            "@cache.provider.redis",
+                        ]
+                    ]
+                ],
+            ],
+        ],
         'databases'  => [
             'main'  => getenv('MAIN_DATABASE'),
             'mysql' => [

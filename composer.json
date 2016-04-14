@@ -17,7 +17,8 @@
         "symfony/monolog-bundle":               "^2.4|^3.0",
         "symfony/symfony":                      "^2.8|^3.0",
         "team-reflex/discord-php":              "dev-develop@dev",
-        "ad7six/dsn":                           "^0.4.0"
+        "ad7six/dsn":                           "^0.4.0",
+        "cache/adapter-bundle":                 "^0.3.3"
     },
     "suggest":           {
         "doctrine/orm":                "^2.4",

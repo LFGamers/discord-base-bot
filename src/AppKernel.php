@@ -11,6 +11,7 @@
 
 namespace Discord\Base;
 
+use Cache\AdapterBundle\CacheAdapterBundle;
 use Discord\Base\AppBundle\AppBundle;
 use Discord\Base\CoreModule\CoreModule;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
@@ -28,6 +29,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -129,6 +131,7 @@ class AppKernel extends Kernel
             new MonologBundle(),
             new DoctrineBundle(),
             new TwigBundle(),
+            new CacheAdapterBundle(),
             new AppBundle(),
         ];
 

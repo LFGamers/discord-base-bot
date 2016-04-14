@@ -41,7 +41,7 @@ abstract class Validator
             throw new \Exception('Define which database you want to store the main data in (mysql or mongo).');
         }
 
-        foreach (['mysql', 'mongo', 'redis', 'elastic'] as $type) {
+        foreach (['mysql', 'mongo', 'elastic'] as $type) {
             if ($config[$type]['enabled'] && empty($config[$type]['dsn'])) {
                 throw new \Exception("Database type '{$type}' is enabled, but has no DSN'");
             }
