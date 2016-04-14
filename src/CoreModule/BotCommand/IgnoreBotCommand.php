@@ -204,7 +204,7 @@ EOF
         foreach ($this->discord->client->guilds as $guild) {
             foreach ($guild->channels as $channel) {
                 if ((string) $channel->id === $channelId) {
-                    return $guild->name . ' - ' . $channel->name;
+                    return $guild->name.' - '.$channel->name;
                 }
             }
         }
