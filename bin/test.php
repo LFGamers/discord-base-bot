@@ -36,16 +36,16 @@ $bot = Bot::create(
             'prefix'    => '%',
             'status'    => 'Discord Base Bot',
         ],
-        'cache' => [
+        'cache'      => [
             'providers' => [
                 'chain' => [
                     'factory' => 'cache.factory.chain',
                     'options' => [
                         'services' => [
-                            "@cache.provider.array",
-                            "@cache.provider.redis",
-                        ]
-                    ]
+                            '@cache.provider.array',
+                            '@cache.provider.redis',
+                        ],
+                    ],
                 ],
                 'array' => [
                     'factory' => 'cache.factory.array',
