@@ -6,6 +6,8 @@ Discord\Base\AppBundle\Model\Module:
             columns: [ name ]
         default_enabled_index:
             columns: [ defaultEnabled ]
+        disableable_index:
+            columns: [ disableable ]
     id:
         id:
             type: integer
@@ -16,4 +18,6 @@ Discord\Base\AppBundle\Model\Module:
             type: string
             length: 256
         defaultEnabled:
+            type: boolean
+        disableable:
             type: boolean

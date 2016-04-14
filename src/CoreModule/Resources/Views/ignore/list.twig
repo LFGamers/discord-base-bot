@@ -1,0 +1,5 @@
+Below is a list of all the things I'm ignoring:
+
+{% for index, ignore in ignores if ignore.ignored %}
+{{ index + 1 }}) **{{ ignore.type }}** - *{{ ignore.name }}*
+{% endfor %}

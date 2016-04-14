@@ -12,6 +12,9 @@ Discord\Base\AppBundle\Model\Module:
         default_enabled_index:
             keys:
                 defaultEnabled: asc
+        disableable_index:
+            keys:
+                disableable: asc
     id:
         id:
             type: integer
@@ -22,4 +25,6 @@ Discord\Base\AppBundle\Model\Module:
         name:
             type: string
         defaultEnabled:
+            type: boolean
+        disableable:
             type: boolean

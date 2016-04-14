@@ -21,6 +21,8 @@ namespace Discord\Base;
 
 use Discord\Base\AppBundle\Discord;
 use Discord\Parts\Channel\Message;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ORM\EntityManager;
 use RegexGuard\Factory;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -274,5 +276,13 @@ abstract class AbstractBotCommand
     public function getDiscord()
     {
         return $this->discord;
+    }
+
+    /**
+     * @return EntityManager|DocumentManager
+     */
+    public function getManager()
+    {
+        return $this->container->get('default_manager');
     }
 }

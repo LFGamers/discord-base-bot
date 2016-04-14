@@ -1,0 +1,2 @@
+Discord\Base\AppBundle\Model\IgnoredChannel:
+    type: entity

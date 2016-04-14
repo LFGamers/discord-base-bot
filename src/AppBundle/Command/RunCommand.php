@@ -11,6 +11,7 @@
 
 namespace Discord\Base\AppBundle\Command;
 
+use Discord\Base\AbstractModule;
 use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
@@ -163,7 +164,7 @@ class RunCommand extends ContainerAwareCommand
         }
 
         /**
-         * @var Module[]
+         * @var Module[]     $modules
          * @var BaseServer[] $servers
          */
         $modules = $manager->getRepository('App:Module')->findAll();
@@ -187,16 +188,18 @@ class RunCommand extends ContainerAwareCommand
         $manager->flush();
     }
 
+    /**
+     * @param string|AbstractModule $module Class Name (not the actual class)
+     */
     private function addModule($module)
     {
         /** @var EntityManager|DocumentManager $manager */
-        $manager        = $this->getContainer()->get('default_manager');
-        $name           = $module::getModuleName();
-        $defaultEnabled = $module::isDefaultEnabled();
+        $manager = $this->getContainer()->get('default_manager');
 
         $dbModule = new Module();
-        $dbModule->setName($name);
-        $dbModule->setDefaultEnabled($defaultEnabled);
+        $dbModule->setName($module::getModuleName());
+        $dbModule->setDefaultEnabled($module::isDefaultEnabled());
+        $dbModule->setDisableable($module::isDisableable());
         $manager->persist($dbModule);
 
         $manager->flush();

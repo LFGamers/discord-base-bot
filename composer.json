@@ -16,7 +16,7 @@
         "sensio/distribution-bundle":           "^5.0",
         "symfony/monolog-bundle":               "^2.4|^3.0",
         "symfony/symfony":                      "^2.8|^3.0",
-        "team-reflex/discord-php":              "dev-develop",
+        "team-reflex/discord-php":              "dev-develop@dev",
         "ad7six/dsn":                           "^0.4.0"
     },
     "suggest":           {

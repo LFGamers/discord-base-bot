@@ -12,6 +12,7 @@
 namespace Discord\Base;
 
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Manager\ServerManager;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
@@ -67,6 +68,11 @@ class Request
      * @var bool
      */
     private $handled;
+
+    /**
+     * @var ServerManager
+     */
+    private $serverManager;
 
     /**
      * Request constructor.
@@ -349,5 +355,25 @@ class Request
     public function getAdminId()
     {
         return $this->adminId;
+    }
+
+    /**
+     * @return ServerManager
+     */
+    public function getServerManager()
+    {
+        return $this->serverManager;
+    }
+
+    /**
+     * @param ServerManager $serverManager
+     *
+     * @return Request
+     */
+    public function setServerManager($serverManager)
+    {
+        $this->serverManager = $serverManager;
+
+        return $this;
     }
 }

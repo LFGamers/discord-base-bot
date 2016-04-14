@@ -1,0 +1,5 @@
+Below is a list of all the modules for {{ request.server.name }}:
+
+{% for index, serverModule in server.modules %}
+{{ index + 1 }}) **{{ serverModule.module.name }}** - *{{ serverModule.enabled ? 'enabled' : 'disabled' }}*
+{% endfor %}

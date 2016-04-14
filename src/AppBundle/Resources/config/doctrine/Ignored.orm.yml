@@ -6,9 +6,9 @@ Discord\Base\AppBundle\Model\Ignored:
         type: string
     discriminatorMap:
         ignored: Discord\Base\AppBundle\Model\Ignored
-        channel: Discord\Base\AppBundle\Model\Ignored\IgnoredChannel
-        server:  Discord\Base\AppBundle\Model\Ignored\IgnoredServer
-        user:    Discord\Base\AppBundle\Model\Ignored\IgnoredUser
+        channel: Discord\Base\AppBundle\Model\IgnoredChannel
+        server:  Discord\Base\AppBundle\Model\IgnoredServer
+        user:    Discord\Base\AppBundle\Model\IgnoredUser
     table: ignored
     indexes:
         type_identifier_index:

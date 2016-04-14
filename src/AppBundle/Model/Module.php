@@ -32,11 +32,17 @@ class Module
     protected $defaultEnabled = false;
 
     /**
+     * @var bool
+     */
+    protected $disableable = true;
+
+    /**
      * AbstractIgnored constructor.
      */
     public function __construct()
     {
         $this->defaultEnabled = false;
+        $this->disableable    = true;
     }
 
     /**
@@ -95,6 +101,26 @@ class Module
     public function setDefaultEnabled($defaultEnabled)
     {
         $this->defaultEnabled = $defaultEnabled;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDisableable()
+    {
+        return $this->disableable;
+    }
+
+    /**
+     * @param boolean $disableable
+     *
+     * @return Module
+     */
+    public function setDisableable($disableable)
+    {
+        $this->disableable = $disableable;
 
         return $this;
     }

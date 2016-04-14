@@ -37,7 +37,7 @@ class Ignored
     protected $ignored = true;
 
     /**
-     * AbstractIgnored constructor.
+     * Ignored constructor.
      */
     public function __construct()
     {
@@ -55,7 +55,7 @@ class Ignored
     /**
      * @param int $id
      *
-     * @return AbstractIgnored
+     * @return Ignored
      */
     public function setId($id)
     {
@@ -75,7 +75,7 @@ class Ignored
     /**
      * @param string $type
      *
-     * @return AbstractIgnored
+     * @return Ignored
      */
     public function setType($type)
     {
@@ -95,7 +95,7 @@ class Ignored
     /**
      * @param string $identifier
      *
-     * @return AbstractIgnored
+     * @return Ignored
      */
     public function setIdentifier($identifier)
     {
@@ -115,7 +115,7 @@ class Ignored
     /**
      * @param string $ignored
      *
-     * @return AbstractIgnored
+     * @return Ignored
      */
     public function setIgnored($ignored)
     {

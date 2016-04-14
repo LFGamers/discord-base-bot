@@ -123,6 +123,7 @@ class ServerManager
     {
         /** @var Request $request */
         $request = $data['request'];
+        $request->setServerManager($this);
         foreach ($this->commandRepository->all() as $command) {
             $request->processCommand($command);
 
@@ -210,5 +211,13 @@ class ServerManager
     protected function getManager()
     {
         return $this->container->get('default_manager');
+    }
+
+    /**
+     * @return BaseServer
+     */
+    public function getDatabaseServer()
+    {
+        return $this->databaseServer;
     }
 }

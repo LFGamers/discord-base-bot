@@ -55,7 +55,7 @@ class HelpBotCommand extends AbstractBotCommand
                     '@Core/help/module.twig',
                     [
                         'module' => [
-                            'name'     => str_replace('Bundle', '', $name),
+                            'name'     => str_replace('Module', '', $name),
                             'commands' => $commands,
                         ],
                     ]
