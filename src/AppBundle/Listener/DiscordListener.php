@@ -15,6 +15,7 @@ use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Event\ServerEvent;
 use Discord\Base\AppBundle\Factory\RequestFactory;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
+use Discord\Base\AppBundle\Repository\IgnoredRepository;
 use Discord\Base\Request;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
@@ -48,23 +49,39 @@ class DiscordListener
     private $factory;
 
     /**
+     * @var IgnoredRepository
+     */
+    private $ignoredRepository;
+
+    /**
+     * @var string
+     */
+    private $adminId;
+
+    /**
      * MessageListener constructor.
      *
      * @param Discord                  $discord
      * @param EventDispatcherInterface $dispatcher
      * @param BotCommandRepository     $repository
      * @param RequestFactory           $factory
+     * @param IgnoredRepository        $ignoredRepository
+     * @param                          $adminId
      */
     public function __construct(
         Discord $discord,
         EventDispatcherInterface $dispatcher,
         BotCommandRepository $repository,
-        RequestFactory $factory
+        RequestFactory $factory,
+        IgnoredRepository $ignoredRepository,
+        $adminId
     ) {
         $this->discord           = $discord;
         $this->dispatcher        = $dispatcher;
         $this->commandRepository = $repository;
         $this->factory           = $factory;
+        $this->ignoredRepository = $ignoredRepository;
+        $this->adminId           = $adminId;
     }
 
     /**
@@ -82,6 +99,10 @@ class DiscordListener
                 }
 
                 $request = $this->factory->create($message);
+                if ($this->isIgnored($request)) {
+                    return;
+                }
+
                 if (null === $message->full_channel->guild) {
                     $this->onPrivateMessage($request);
 
@@ -119,5 +140,33 @@ class DiscordListener
                 return;
             }
         }
+    }
+
+    private function isIgnored(Request $request)
+    {
+        $channelId = (string) $request->getChannel(true)->id;
+        $serverId  = (string) $request->getServer()->id;
+        $userId    = (string) $request->getAuthor()->id;
+
+        if ($userId === $this->adminId) {
+            return false;
+        }
+
+        foreach ($this->ignoredRepository->all() as $ignored) {
+            if (!$ignored->getIgnored()) {
+                continue;
+            }
+            if ($ignored->isType('channel') && $ignored->getIdentifier() === $channelId) {
+                return true;
+            }
+            if ($ignored->isType('server') && $ignored->getIdentifier() === $serverId) {
+                return true;
+            }
+            if ($ignored->isType('user') && $ignored->getIdentifier() === $userId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

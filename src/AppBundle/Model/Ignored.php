@@ -123,4 +123,14 @@ class Ignored
 
         return $this;
     }
+
+    /**
+     * @param string $type
+     *
+     * @return bool
+     */
+    public function isType($type)
+    {
+        return $this->type === $type;
+    }
 }

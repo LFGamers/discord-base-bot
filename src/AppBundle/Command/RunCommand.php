@@ -16,6 +16,7 @@ use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\ServerModule;
+use Discord\Base\AppBundle\Repository\IgnoredRepository;
 use Discord\WebSockets\WebSocket;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
@@ -78,6 +79,7 @@ class RunCommand extends ContainerAwareCommand
         $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
 
         $this->updateModules();
+        $this->fillIgnoredRepository();
 
         /*
          * @var Discord
@@ -163,11 +165,9 @@ class RunCommand extends ContainerAwareCommand
             }
         }
 
-        /**
-         * @var Module[]
-         * @var BaseServer[] $servers
-         */
+        /** @var Module[] $modules */
         $modules = $manager->getRepository('App:Module')->findAll();
+        /** @var BaseServer[] $servers */
         $servers = $manager->getRepository('App:BaseServer')->findAll();
         foreach ($servers as $server) {
             foreach ($modules as $module) {
@@ -203,5 +203,18 @@ class RunCommand extends ContainerAwareCommand
         $manager->persist($dbModule);
 
         $manager->flush();
+    }
+
+    private function fillIgnoredRepository()
+    {
+        /** @var EntityManager|DocumentManager $manager */
+        $manager = $this->getContainer()->get('default_manager');
+        /** @var IgnoredRepository $ignoredRepository */
+        $ignoredRepository = $this->getContainer()->get('repository.ignored');
+
+        $repo = $manager->getRepository('App:Ignored');
+        foreach ($repo->findAll() as $ignored) {
+            $ignoredRepository->add($ignored);
+        }
     }
 }

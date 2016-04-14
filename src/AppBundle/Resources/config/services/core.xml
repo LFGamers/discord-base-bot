@@ -5,6 +5,7 @@
         <service id="discord" class="Discord\Base\AppBundle\Discord">
             <argument>%token%</argument>
         </service>
+        <service id="repository.ignored" class="Discord\Base\AppBundle\Repository\IgnoredRepository" />
     </services>
 
 </container>

@@ -66,8 +66,11 @@ The ignore command lets you list, ignore, and unignore users, channels, and serv
 `ignore server` Ignores the current server
 `unignore server` Unignores the current server
 
-`ignore @user` Ignores the give user
-`unignore @user` Unignores the give user
+`ignore @user` Ignores the given user
+`unignore @user` Unignores the given user
+
+`ignore #channel` Ignores the given channel
+`unignore #channel` Unignores the given channel
 
 `ignore <type> <id>` Ignores the given type, with the given id
 `unignore <type> <id>` Ignores the given type, with the given id
@@ -90,6 +93,7 @@ EOF
         $this->responds('/^ignore list$/i', [$this, 'renderIgnoreList']);
         $this->responds('/^(un)?ignore server$/', [$this, 'toggleCurrentServer']);
         $this->responds('/^(un)?ignore <@(\d+)>$/', [$this, 'toggleUser']);
+        $this->responds('/^(un)?ignore <#(\d+)>$/', [$this, 'toggleChannel']);
         $this->responds('/^(un)?ignore (user|channel|server) ([0-9]+)$/', [$this, 'toggleIgnore']);
     }
 
@@ -98,7 +102,7 @@ EOF
      */
     protected function renderIgnoreList(Request $request)
     {
-        $ignores = $this->getManager()->getRepository('App:Ignored')->findAll();
+        $ignores = $this->getManager()->getRepository('App:Ignored')->findBy(['ignored' => true]);
         foreach ($ignores as &$ignored) {
             if ($ignored instanceof IgnoredChannel) {
                 $ignored->name = $this->getChannelName($ignored->getIdentifier());
@@ -143,6 +147,17 @@ EOF
      * @param Request $request
      * @param array   $matches
      */
+    protected function toggleChannel(Request $request, array $matches)
+    {
+        $ignore = $this->setIgnored(empty($matches[1]), 'channel', $matches[2]);
+
+        $request->reply(($ignore ? 'Ignored' : 'Unignored').' <#'.$matches[2].'>');
+    }
+
+    /**
+     * @param Request $request
+     * @param array   $matches
+     */
     protected function toggleIgnore(Request $request, array $matches)
     {
         $ignore = $this->setIgnored(empty($matches[1]), $matches[2], $matches[3]);
@@ -167,10 +182,13 @@ EOF
                 : ($type === 'server' ? new IgnoredServer() : new IgnoredChannel());
 
             $ignored->setIdentifier($identifier);
+            $this->container->get('repository.ignored')->add($ignored);
             $this->getManager()->persist($ignored);
         }
 
         $ignored->setIgnored($ignore);
+        $this->container->get('repository.ignored')->replace($ignored);
+
         $this->getManager()->flush();
 
         return $ignore;
@@ -185,8 +203,8 @@ EOF
     {
         foreach ($this->discord->client->guilds as $guild) {
             foreach ($guild->channels as $channel) {
-                if ($channel->id === $channelId) {
-                    return $channel->name;
+                if ((string) $channel->id === $channelId) {
+                    return $guild->name . ' - ' . $channel->name;
                 }
             }
         }
@@ -202,7 +220,7 @@ EOF
     private function getServerName($serverId)
     {
         foreach ($this->discord->client->guilds as $guild) {
-            if ($guild->id === $serverId) {
+            if ((string) $guild->id === $serverId) {
                 return $guild->name;
             }
         }
