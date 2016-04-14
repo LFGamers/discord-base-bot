@@ -79,7 +79,7 @@ class RunCommand extends ContainerAwareCommand
 
         $this->updateModules();
 
-        /**
+        /*
          * @var Discord
          * @var WebSocket $ws
          */

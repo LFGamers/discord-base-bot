@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-base-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -12,12 +12,9 @@
 namespace Discord\Base\AppBundle\Factory;
 
 use Discord\Base\AppBundle\Discord;
-use Discord\Base\AppBundle\Manager\ServerManager;
 use Discord\Base\Request;
 use Discord\Parts\Channel\Message;
-use Discord\Parts\Guild\Guild;
 use Monolog\Logger;
-use Symfony\Component\DependencyInjection\Container;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>

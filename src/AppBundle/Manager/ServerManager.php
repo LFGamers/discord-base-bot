@@ -106,7 +106,7 @@ class ServerManager
      */
     public function onServerEvent(ServerEvent $event)
     {
-        if ($event->getServer()->getAttribute('id') != $this->clientServer->getAttribute('id')) {
+        if ($event->getServer()->getAttribute('id') !== $this->clientServer->getAttribute('id')) {
             return;
         }
 

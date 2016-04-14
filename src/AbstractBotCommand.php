@@ -110,7 +110,7 @@ abstract class AbstractBotCommand
             return $this->getDiscord();
         }
 
-        throw new \InvalidArgumentException;
+        throw new \InvalidArgumentException();
     }
 
     /**
