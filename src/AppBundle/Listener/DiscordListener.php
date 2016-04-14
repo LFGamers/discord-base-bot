@@ -54,7 +54,6 @@ class DiscordListener
      * @param EventDispatcherInterface $dispatcher
      * @param BotCommandRepository     $repository
      * @param RequestFactory           $factory
-     *
      */
     public function __construct(
         Discord $discord,
