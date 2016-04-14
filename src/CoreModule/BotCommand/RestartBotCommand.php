@@ -62,7 +62,7 @@ class RestartBotCommand extends AbstractBotCommand
         }
 
         $request->getLogger()->info('Restarting!');
-        $request->reply("Restarting");
+        $request->reply('Restarting');
         die(1);
     }
 }

@@ -78,7 +78,7 @@ class RunCommand extends ContainerAwareCommand
 
         $this->updateModules();
 
-        /**
+        /*
          * @var Discord
          * @var WebSocket $ws
          */
@@ -162,7 +162,7 @@ class RunCommand extends ContainerAwareCommand
             }
         }
 
-        /**
+        /*
          * @var Module[]
          * @var BaseServer[] $servers
          */

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-base-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -103,7 +103,7 @@ class Request
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isHandled()
     {
@@ -114,8 +114,9 @@ class Request
      * @param       $template
      * @param array $parameters
      *
-     * @return string
      * @throws \Twig_Error
+     *
+     * @return string
      */
     public function renderTemplate($template, array $parameters = [])
     {
