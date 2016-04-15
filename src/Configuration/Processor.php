@@ -60,7 +60,7 @@ abstract class Processor
     private static function prepareDoctrine(&$config)
     {
         $databases = $config['databases'];
-        if (!isset($databases['main'])) {
+        if (isset($databases['main'])) {
             $config['parameters']['main_database'] = $databases['main'];
         } else {
             $config['parameters']['main_database'] = $databases['mysql']['enabled'] ? 'mysql' : 'mongo';
