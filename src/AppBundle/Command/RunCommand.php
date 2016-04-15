@@ -123,7 +123,7 @@ class RunCommand extends ContainerAwareCommand
 
                 $status = $this->getContainer()->getParameter('status');
                 if (!empty($status)) {
-                    $this->output->note("Setting status to: " . $status);
+                    $this->output->note('Setting status to: '.$status);
                     $discord->client->updatePresence($ws, $status, false);
                 }
             }
