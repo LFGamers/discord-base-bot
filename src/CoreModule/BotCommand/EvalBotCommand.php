@@ -51,8 +51,13 @@ class EvalBotCommand extends AbstractBotCommand
      */
     protected function evalCode(Request $request, array $matches = [])
     {
+        // Lets set some local variables for the eval
+        $client    = $this->getDiscord()->client->getClient();
+        $webSocket = $this->getDiscord()->ws;
+        $container = $this->container;
+
         $message  = $request->reply('Executing Code');
-        $response = eval('return '.$matches[1]);
+        $response = eval($matches[1]);
 
         if (is_array($response) || is_object($response)) {
             $response = json_decode($response, true);

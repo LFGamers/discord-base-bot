@@ -10,23 +10,14 @@
  */
 
 use Discord\Base\Bot;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 
-/*
- * @var Composer\Autoload\ClassLoader
- */
-$loader = require __DIR__.'/../vendor/autoload.php';
-AnnotationRegistry::registerLoader([$loader, 'loadClass']);
-
-ini_set('memory_limit', '-1');
-set_time_limit(0);
-//umask(0000);
+require __DIR__.'/../vendor/autoload.php';
 
 $bot = Bot::create(
     [
         'modules'    => [],
         'parameters' => [
-            'name'      => 'Test Bot',
+            'name'      => getenv('NAME'),
             'version'   => '0.0.1',
             'author'    => 'Aaron',
             'log_dir'   => __DIR__.'/../var/logs/',
@@ -34,7 +25,7 @@ $bot = Bot::create(
             'admin_id'  => getenv('ADMIN_ID'),
             'token'     => getenv('TOKEN'),
             'prefix'    => '%',
-            'status'    => 'Discord Base Bot',
+            'status'    => getenv('STATUS'),
         ],
         'cache'      => [
             'providers' => [
