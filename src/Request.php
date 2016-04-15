@@ -282,7 +282,10 @@ class Request
     public function getContent($mentionless = true)
     {
         if ($mentionless) {
-            return str_replace([$this->prefix, $this->getBotMention().' '], '', $this->message->content);
+            $dbServer = $this->getDatabaseServer();
+            $prefix   = $dbServer === null ? $this->prefix : $dbServer->getPrefix();
+
+            return str_replace([$prefix, $this->getBotMention().' '], '', $this->message->content);
         }
 
         return $this->message->content;
@@ -384,7 +387,7 @@ class Request
     public function getDatabaseServer()
     {
         if (null === $this->serverManager) {
-            return;
+            return null;
         }
 
         return $this->serverManager->getDatabaseServer();
