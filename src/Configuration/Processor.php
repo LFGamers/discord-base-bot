@@ -22,7 +22,6 @@ namespace Discord\Base\Configuration;
 use AD7six\Dsn\Db\MysqlDsn;
 use AD7six\Dsn\Dsn;
 use Symfony\Component\Config\Definition\Processor as SymfonyProcessor;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -98,7 +97,7 @@ abstract class Processor
                 ],
                 'orm'  => [
                     'auto_mapping' => false,
-                    'mappings'     => !isset($databases['main']) || $databases['main'] === 'mysql' ? $mapping : null
+                    'mappings'     => !isset($databases['main']) || $databases['main'] === 'mysql' ? $mapping : null,
                 ],
             ];
         }
@@ -113,8 +112,8 @@ abstract class Processor
                 'document_managers' => [
                     'default' => [
                         'auto_mapping' => false,
-                        'mappings'     => !isset($databases['main']) || $databases['main'] === 'mongo' ? $mapping : null
-                    ]
+                        'mappings'     => !isset($databases['main']) || $databases['main'] === 'mongo' ? $mapping : null,
+                    ],
                 ],
             ];
         }
