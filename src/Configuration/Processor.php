@@ -95,7 +95,7 @@ abstract class Processor
                         ],
                     ],
                 ],
-                'orm'  => ['auto_mapping' => false, 'mappings' => $mapping],
+                'orm'  => ['auto_mapping' => true, 'mappings' => $mapping],
             ];
         }
 
@@ -117,7 +117,7 @@ abstract class Processor
                         'server' => $databases['mongo']['dsn'],
                     ],
                 ],
-                'document_managers' => ['default' => ['auto_mapping' => false, 'mappings' => $mapping]],
+                'document_managers' => ['default' => ['auto_mapping' => true, 'mappings' => $mapping]],
             ];
         }
     }
