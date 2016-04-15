@@ -9,36 +9,9 @@
  * with this source code in the file LICENSE
  */
 
-/**
- * This file is part of discord-base-bot.
- *
- * Copyright (c) 2016 Aaron Scherer <aequasi@gmail.com>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE
- */
-
-/*
- * This file is part of discord-base-bot
- *
- * (c) Aaron Scherer <aequasi@gmail.com>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE
- */
-
-/**
- * This file is part of discord-base-bot.
- *
- * (c) Aaron Scherer <aequasi@gmail.com>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE
- */
 namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
-use Discord\Base\AppBundle\Model\Ignored;
 use Discord\Base\AppBundle\Model\IgnoredChannel;
 use Discord\Base\AppBundle\Model\IgnoredServer;
 use Discord\Base\AppBundle\Model\IgnoredUser;

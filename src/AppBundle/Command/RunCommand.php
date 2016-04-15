@@ -17,7 +17,6 @@ use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
-use Discord\WebSockets\WebSocket;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
