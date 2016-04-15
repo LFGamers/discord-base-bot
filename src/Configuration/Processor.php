@@ -22,6 +22,7 @@ namespace Discord\Base\Configuration;
 use AD7six\Dsn\Db\MysqlDsn;
 use AD7six\Dsn\Dsn;
 use Symfony\Component\Config\Definition\Processor as SymfonyProcessor;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -66,22 +67,22 @@ abstract class Processor
             $config['parameters']['main_database'] = $databases['mysql']['enabled'] ? 'mysql' : 'mongo';
         }
 
+        $mapping = array_merge(
+            [
+                'AppBundle' => [
+                    'type'   => 'yml',
+                    'prefix' => 'Discord\Base\AppBundle\Model',
+                    'alias'  => 'App',
+                ],
+            ],
+            $config['databases']['mappings']
+        );
+
         unset($config['databases']);
 
         if ($databases['mysql']['enabled']) {
             /** @var MysqlDsn $mysql */
             $mysql = Dsn::parse($databases['mysql']['dsn'])->toArray();
-
-            $mapping = [];
-            if (!isset($databases['main']) || $databases['main'] === 'mysql') {
-                $mapping = [
-                    'AppBundle' => [
-                        'type'   => 'yml',
-                        'prefix' => 'Discord\Base\AppBundle\Model',
-                        'alias'  => 'App',
-                    ],
-                ];
-            }
 
             $config['doctrine'] = [
                 'dbal' => [
@@ -95,29 +96,26 @@ abstract class Processor
                         ],
                     ],
                 ],
-                'orm'  => ['auto_mapping' => true, 'mappings' => $mapping],
+                'orm'  => [
+                    'auto_mapping' => false,
+                    'mappings'     => !isset($databases['main']) || $databases['main'] === 'mysql' ? $mapping : null
+                ],
             ];
         }
 
         if ($databases['mongo']['enabled']) {
-            $mapping = [];
-            if (!isset($databases['main']) || $databases['main'] === 'mongo') {
-                $mapping = [
-                    'AppBundle' => [
-                        'type'   => 'yml',
-                        'prefix' => 'Discord\Base\AppBundle\Model',
-                        'alias'  => 'App',
-                    ],
-                ];
-            }
-
             $config['doctrine_mongodb'] = [
                 'connections'       => [
                     'default' => [
                         'server' => $databases['mongo']['dsn'],
                     ],
                 ],
-                'document_managers' => ['default' => ['auto_mapping' => true, 'mappings' => $mapping]],
+                'document_managers' => [
+                    'default' => [
+                        'auto_mapping' => false,
+                        'mappings'     => !isset($databases['main']) || $databases['main'] === 'mongo' ? $mapping : null
+                    ]
+                ],
             ];
         }
     }

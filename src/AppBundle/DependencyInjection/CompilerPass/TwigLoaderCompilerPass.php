@@ -39,10 +39,15 @@ class TwigLoaderCompilerPass implements CompilerPassInterface
             $ref = new \ReflectionClass($module);
             $dir = dirname($ref->getFileName());
 
+            $dir = $dir.'/Resources/views/';
+            if (!file_exists($dir)) {
+                continue;
+            }
+
             $container->getDefinition('twig.loader')
                 ->addMethodCall(
                     'addPath',
-                    [$dir.'/Resources/views/', str_replace('Module', '', $ref->getShortName())]
+                    [$dir, str_replace('Module', '', $ref->getShortName())]
                 );
         }
     }

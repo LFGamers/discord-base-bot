@@ -63,6 +63,7 @@ class Configuration implements ConfigurationInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->enumNode('main')->values(['mysql', 'mongo'])->end()
+                ->arrayNode('mappings')->ignoreExtraKeys(false)->end()
                 ->arrayNode('mysql')
                     ->addDefaultsIfNotSet()
                     ->children()
