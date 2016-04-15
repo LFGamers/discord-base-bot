@@ -377,4 +377,16 @@ class Request
 
         return $this;
     }
+
+    /**
+     * @return AppBundle\Model\BaseServer|null
+     */
+    public function getDatabaseServer()
+    {
+        if (null === $this->serverManager) {
+            return null;
+        }
+
+        return $this->serverManager->getDatabaseServer();
+    }
 }
