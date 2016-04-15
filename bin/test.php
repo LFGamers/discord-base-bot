@@ -43,7 +43,7 @@ $bot = Bot::create(
                 ],
                 'redis' => [
                     'factory' => 'cache.factory.redis',
-                    'options' => ['dsn' => getenv('REDIS_DSN')]
+                    'options' => ['dsn' => getenv('REDIS_DSN')],
                 ],
             ],
         ],
