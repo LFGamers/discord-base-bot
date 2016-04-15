@@ -11,6 +11,7 @@
 
 namespace Discord\Base\Configuration;
 
+use Discord\Base\AppBundle\Manager\ServerManager;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -47,6 +48,9 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('admin_id')->isRequired()->end()
                         ->scalarNode('log_dir')->isRequired()->end()
                         ->scalarNode('cache_dir')->isRequired()->end()
+                        ->scalarNode('server_manager_class')
+                            ->defaultValue(ServerManager::class)
+                        ->end()
                     ->end()
                 ->end()
             ->end();

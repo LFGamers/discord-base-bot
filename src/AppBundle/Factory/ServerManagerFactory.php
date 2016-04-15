@@ -43,9 +43,16 @@ class ServerManagerFactory
      * @param Guild $guild
      *
      * @return ServerManager
+     * @throws \Exception
      */
     public function create(Guild $guild)
     {
-        return new ServerManager($this->container, $guild);
+        $cls = $this->container->getParameter('server_manager_factory');
+
+        $instance = new $cls($this->container, $guild);
+
+        if (!($instance instanceof ServerManager)) {
+            throw new \Exception("ServerManager must extend ".ServerManager::class);
+        }
     }
 }
