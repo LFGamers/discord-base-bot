@@ -48,7 +48,7 @@ class ServerManagerFactory
      */
     public function create(Guild $guild)
     {
-        $cls = $this->container->getParameter('server_manager_factory');
+        $cls = $this->container->getParameter('server_manager_class');
 
         $instance = new $cls($this->container, $guild);
 
