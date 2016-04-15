@@ -143,7 +143,6 @@ class AppKernel extends Kernel
         if (in_array($this->getEnvironment(), ['dev'], true)) {
             $bundles[] = new DebugBundle();
             $bundles[] = new SensioDistributionBundle();
-            $bundles[] = new SensioGeneratorBundle();
         }
 
         return $bundles;

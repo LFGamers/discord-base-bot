@@ -26,7 +26,6 @@
         "doctrine/mongodb-odm-bundle": "^3.1"
     },
     "require-dev":       {
-        "sensio/generator-bundle":     "^3.0",
         "symfony/var-dumper":          "^2.8|^3.0",
         "symfony/phpunit-bridge":      "^2.8|^3.0",
         "doctrine/orm":                "^2.4",
