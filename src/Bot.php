@@ -31,7 +31,7 @@ class Bot
     {
         ini_set('memory_limit', '-1');
         set_time_limit(0);
-        
+
         $bot         = new static($configuration, $containerBuilder);
         $application = new Application($bot->getKernel());
 
