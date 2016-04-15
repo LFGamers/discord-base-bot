@@ -54,5 +54,7 @@ class ServerManagerFactory
         if (!($instance instanceof ServerManager)) {
             throw new \Exception("ServerManager must extend ".ServerManager::class);
         }
+
+        return $instance;
     }
 }
