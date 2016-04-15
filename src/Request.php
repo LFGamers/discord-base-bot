@@ -387,7 +387,7 @@ class Request
     public function getDatabaseServer()
     {
         if (null === $this->serverManager) {
-            return null;
+            return;
         }
 
         return $this->serverManager->getDatabaseServer();
