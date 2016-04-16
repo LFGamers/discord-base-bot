@@ -16,7 +16,7 @@ Discord\Base\AppBundle\Model\Module:
         name:
             unique: true
             type: string
-            length: 256
+            length: 64
         defaultEnabled:
             type: boolean
         disableable:
