@@ -48,8 +48,13 @@ class EvalBotCommand extends AbstractBotCommand
         $webSocket = $this->getDiscord()->ws;
         $container = $this->container;
 
-        $message  = $request->reply('Executing Code');
-        $response = eval($matches[1]);
+        $message = $request->reply('Executing Code');
+
+        try {
+            $response = eval($matches[1]);
+        } catch (\Exception $e) {
+            $request->updateMessage($message, 'Error executing code: '.$e->getMessage());
+        }
 
         if (is_array($response) || is_object($response)) {
             $response = json_decode($response, true);
