@@ -330,6 +330,16 @@ class Request
     }
 
     /**
+     * @param int $index
+     *
+     * @return User
+     */
+    public function getMention($index)
+    {
+        return $this->getMentions()[$index];
+    }
+
+    /**
      * @return string
      */
     public function getBotMention()
