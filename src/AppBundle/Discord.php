@@ -34,10 +34,18 @@ class Discord
      * Discord constructor.
      *
      * @param string $token
+     * @param null   $shardId
+     * @param null   $shardCount
      */
-    public function __construct($token)
+    public function __construct($token, $shardId = null, $shardCount = null)
     {
-        $this->client = new \Discord\Discord(['token' => $token]);
+        $options = ['token' => $token];
+        if (!is_null($shardId) && !is_null($shardCount)) {
+            $options['shardId']    = $shardId;
+            $options['shardCount'] = $shardCount;
+        }
+
+        $this->client = new \Discord\Discord($options);
         $this->ws     = new WebSocket($this->client);
 
         Cache::setCache(new ArrayCacheDriver());

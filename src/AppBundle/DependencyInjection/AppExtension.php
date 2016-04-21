@@ -38,5 +38,12 @@ class AppExtension extends Extension
                 ? 'doctrine.orm.default_entity_manager'
                 : 'doctrine_mongodb.odm.default_document_manager'
         );
+        
+        $sharding = $container->getParameter('sharding');
+        if ($sharding['enabled']) {
+            $container->getDefinition('discord')
+                ->addArgument($sharding['shardId'])
+                ->addArgument($sharding['shardCount']);
+        }
     }
 }

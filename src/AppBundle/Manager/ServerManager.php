@@ -92,6 +92,7 @@ class ServerManager
 
         $this->initialize();
         $this->dispatcher->dispatch('manager.server.loaded', ServerManagerLoaded::create($this));
+        $this->logger->debug("Created server manager for: " . $this->clientServer->name);
     }
 
     /**
@@ -124,13 +125,26 @@ class ServerManager
         /** @var Request $request */
         $request = $data['request'];
         $request->setServerManager($this);
+
+        $isCommand = false;
         foreach ($this->commandRepository->all() as $command) {
             $request->processCommand($command);
 
             if ($request->isHandled()) {
-                return;
+                $isCommand = true;
+                continue;
             }
         }
+
+        $this->logger->debug(sprintf(
+            "[%s] [%s] [%s/#%s] <@%s> %s",
+            $isCommand ? 'Command' : 'Message',
+            (new \DateTime())->format('d/m/y H:i:s A'),
+            $request->isPrivateMessage() ? 'Private Message' : $request->getServer()->name,
+            $request->getChannel()->name,
+            $request->getAuthor()->username,
+            $request->getContent()
+        ));
     }
 
     /**

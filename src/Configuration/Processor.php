@@ -66,7 +66,7 @@ abstract class Processor
                     'alias'  => 'App',
                 ],
             ],
-            $config['databases']['mappings']
+            isset($config['databases']['mappings']) ? $config['databases']['mappings'] : []
         );
 
         unset($config['databases']);

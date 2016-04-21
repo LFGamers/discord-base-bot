@@ -39,6 +39,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('parameters')
                     ->addDefaultsIfNotSet()
                     ->children()
+                        ->append($this->addShardingNode())
                         ->scalarNode('name')->isRequired()->end()
                         ->scalarNode('version')->isRequired()->end()
                         ->scalarNode('author')->isRequired()->end()
@@ -90,6 +91,26 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+
+        return $node;
+    }
+
+    /**
+     * @return TreeBuilder
+     */
+    private function addShardingNode()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node        = $treeBuilder->root('sharding');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->booleanNode('enabled')->defaultFalse()->end()
+                ->scalarNode('shardId')->end()
+                ->scalarNode('shardCount')->end()
+            ->end();
+
 
         return $node;
     }
