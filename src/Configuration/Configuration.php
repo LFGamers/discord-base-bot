@@ -111,7 +111,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('shardCount')->end()
             ->end();
 
-
         return $node;
     }
 }
