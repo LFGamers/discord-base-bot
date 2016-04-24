@@ -18,7 +18,6 @@ use Doctrine\ORM\EntityManager;
 use RegexGuard\Factory;
 use Symfony\Bridge\Monolog\Logger;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
