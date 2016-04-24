@@ -20,7 +20,8 @@ composer require lfgamers/discord-base-bot
 
 ## Usage
 
-To get a super basic bot running, create a simple entry script like the following:
+To get a super basic bot running, you will have to create a module, and your module will have to  set up a Server class
+that extends `Discord\Base\AppBundle\Model\Server`, and then create a simple entry script like the following:
  
 ```php
 <?php
@@ -31,17 +32,20 @@ require __DIR__.'/../vendor/autoload.php';
  
 $bot = Bot::create(
     [
-        'modules'    => [],
+        'modules'    => [
+            MyModule::class
+        ],
         'parameters' => [
-            'name'      => 'MyFirstDiscordBot',
-            'version'   => '0.0.1',
-            'author'    => 'AwesomePerson',
-            'log_dir'   => __DIR__.'/var/logs/',
-            'cache_dir' => __DIR__.'/var/cache/',
-            'admin_id'  => 'MyDiscordUserAccountId',
-            'token'     => 'MyBotToken',
-            'prefix'    => '%',
-            'status'    => 'with My Awesome Discord Bot',
+            'name'        => 'MyFirstDiscordBot',
+            'version'     => '0.0.1',
+            'author'      => 'AwesomePerson',
+            'log_dir'     => __DIR__.'/var/logs/',
+            'cache_dir'   => __DIR__.'/var/cache/',
+            'admin_id'    => 'MyDiscordUserAccountId',
+            'token'       => 'MyBotToken',
+            'prefix'      => '%',
+            'status'      => 'with My Awesome Discord Bot',
+            'server_class' => MyModule\Model\Server::class,
         ],
         'databases'  => [
             'mysql' => [
@@ -54,6 +58,7 @@ $bot = Bot::create(
 
 $bot->run();
 ```
+
 If you haven't run the bot before, you have to set up the schema with:
 
 `php bot.php doctrine:scehma:create`

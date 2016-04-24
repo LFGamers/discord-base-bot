@@ -13,8 +13,8 @@ namespace Discord\Base\AppBundle\Command;
 
 use Discord\Base\AbstractModule;
 use Discord\Base\AppBundle\Discord;
-use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
+use Discord\Base\AppBundle\Model\Server;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -23,6 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -80,10 +81,7 @@ class RunCommand extends ContainerAwareCommand
         $this->updateModules();
         $this->fillIgnoredRepository();
 
-        /*
-         * @var Discord
-         * @var WebSocket $ws
-         */
+        /** @var Discord */
         $discord = $this->getContainer()->get('discord');
         $ws      = $discord->ws;
 
@@ -167,8 +165,8 @@ class RunCommand extends ContainerAwareCommand
 
         /** @var Module[] $modules */
         $modules = $manager->getRepository('App:Module')->findAll();
-        /** @var BaseServer[] $servers */
-        $servers = $manager->getRepository('App:BaseServer')->findAll();
+        /** @var Server[] $servers */
+        $servers = $manager->getRepository($this->getContainer()->getParameter('server_class'))->findAll();
         foreach ($servers as $server) {
             foreach ($modules as $module) {
                 if (!$server->hasModule($module)) {

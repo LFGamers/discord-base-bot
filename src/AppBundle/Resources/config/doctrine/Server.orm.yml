@@ -1,6 +1,6 @@
-Discord\Base\AppBundle\Model\BaseServer:
-    type: entity
-    table: base_server
+Discord\Base\AppBundle\Model\Server:
+    type: mappedSuperclass
+    table: server
     indexes:
         identifier_index:
             columns: [ identifier ]

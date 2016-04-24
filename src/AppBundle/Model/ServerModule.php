@@ -22,7 +22,7 @@ class ServerModule
     protected $id;
 
     /**
-     * @var BaseServer
+     * @var Server
      */
     protected $server;
 
@@ -57,7 +57,7 @@ class ServerModule
     }
 
     /**
-     * @return BaseServer
+     * @return Server
      */
     public function getServer()
     {
@@ -65,7 +65,7 @@ class ServerModule
     }
 
     /**
-     * @param BaseServer $server
+     * @param Server $server
      *
      * @return ServerModule
      */

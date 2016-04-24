@@ -10,7 +10,7 @@ Discord\Base\AppBundle\Model\ServerModule:
             type: boolean
     manyToOne:
         server:
-            targetEntity: Discord\Base\AppBundle\Model\BaseServer
+            targetEntity: Discord\Base\AppBundle\Model\Server
             inversedBy: modules
         module:
             targetEntity: Discord\Base\AppBundle\Model\Module

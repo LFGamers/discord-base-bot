@@ -394,7 +394,7 @@ class Request
     }
 
     /**
-     * @return AppBundle\Model\BaseServer|null
+     * @return AppBundle\Model\Server|null
      */
     public function getDatabaseServer()
     {

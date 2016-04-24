@@ -14,8 +14,8 @@ namespace Discord\Base\AppBundle\Manager;
 use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Event\ServerEvent;
 use Discord\Base\AppBundle\Event\ServerManagerLoaded;
-use Discord\Base\AppBundle\Model\BaseServer;
 use Discord\Base\AppBundle\Model\Module;
+use Discord\Base\AppBundle\Model\Server;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Discord\Base\Request;
@@ -61,7 +61,7 @@ class ServerManager
     protected $clientServer;
 
     /**
-     * @var BaseServer
+     * @var Server
      */
     protected $databaseServer;
 
@@ -87,7 +87,7 @@ class ServerManager
         $this->clientServer   = $server;
         $this->databaseServer = $this->fetchDatabaseServer();
 
-        $this->updateBaseServer($this->clientServer);
+        $this->updateServer($this->clientServer);
         $this->dispatcher->addListener(ServerEvent::class, [$this, 'onServerEvent']);
 
         $this->initialize();
@@ -151,7 +151,7 @@ class ServerManager
     /**
      * @param Guild $clientServer
      */
-    public function updateBaseServer(Guild $clientServer)
+    public function updateServer(Guild $clientServer)
     {
         $this->databaseServer->setIdentifier($clientServer->getAttribute('id'));
         $this->databaseServer->setOwner($clientServer->getOwnerAttribute()->getAttribute('id'));
@@ -165,11 +165,14 @@ class ServerManager
      */
     protected function fetchDatabaseServer()
     {
-        $server = $this->getRepository('App:BaseServer')
+        $cls = $this->container->getParameter('server_class');
+
+        /** @var Server $server */
+        $server = $this->getRepository($cls)
             ->findOneBy(['identifier' => $this->clientServer->getAttribute('id')]);
 
         if (empty($server)) {
-            $server = new BaseServer();
+            $server = new $cls;
             $server->setIdentifier($this->clientServer->getAttribute('id'));
             $server->setOwner($this->clientServer->getOwnerAttribute()->getAttribute('id'));
             $server->setPrefix($this->container->getParameter('prefix'));
@@ -195,11 +198,11 @@ class ServerManager
     }
 
     /**
-     * @param BaseServer $server
+     * @param Server $server
      *
      * @return array|Module[]
      */
-    protected function defaultModules(BaseServer $server)
+    protected function defaultModules(Server $server)
     {
         $serverModules = [];
 
@@ -229,7 +232,7 @@ class ServerManager
     }
 
     /**
-     * @return BaseServer
+     * @return Server
      */
     public function getDatabaseServer()
     {

@@ -1,6 +1,6 @@
-Discord\Base\AppBundle\Model\BaseServer:
-    type: document
-    collection: base_servers
+Discord\Base\AppBundle\Model\Server:
+    type: mappedSuperclass
+    collection: servers
     indexes:
         identifier_index:
             keys:

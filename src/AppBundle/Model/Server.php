@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  */
-class BaseServer
+abstract class Server
 {
     /**
      * @var int|\MongoId
@@ -62,7 +62,7 @@ class BaseServer
     /**
      * @param int|\MongoId $id
      *
-     * @return BaseServer
+     * @return Server
      */
     public function setId($id)
     {
@@ -82,7 +82,7 @@ class BaseServer
     /**
      * @param string $identifier
      *
-     * @return BaseServer
+     * @return Server
      */
     public function setIdentifier($identifier)
     {
@@ -102,7 +102,7 @@ class BaseServer
     /**
      * @param string $owner
      *
-     * @return BaseServer
+     * @return Server
      */
     public function setOwner($owner)
     {
@@ -122,7 +122,7 @@ class BaseServer
     /**
      * @param string $prefix
      *
-     * @return BaseServer
+     * @return Server
      */
     public function setPrefix($prefix)
     {
@@ -142,7 +142,7 @@ class BaseServer
     /**
      * @param ServerModule[]|ArrayCollection $modules
      *
-     * @return BaseServer
+     * @return Server
      */
     public function setModules(array $modules)
     {
@@ -154,7 +154,7 @@ class BaseServer
     /**
      * @param ServerModule $module
      *
-     * @return BaseServer
+     * @return Server
      */
     public function addModule(ServerModule $module)
     {

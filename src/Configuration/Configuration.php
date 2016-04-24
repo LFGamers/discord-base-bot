@@ -50,6 +50,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('admin_id')->isRequired()->end()
                         ->scalarNode('log_dir')->isRequired()->end()
                         ->scalarNode('cache_dir')->isRequired()->end()
+                        ->scalarNode('server_class')->isRequired()->end()
                         ->scalarNode('server_manager_class')
                             ->defaultValue(ServerManager::class)
                         ->end()

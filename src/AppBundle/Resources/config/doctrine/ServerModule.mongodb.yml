@@ -24,6 +24,6 @@ Discord\Base\AppBundle\Model\ServerModule:
 
     referenceOne:
         server:
-            targetDocument: Discord\Base\AppBundle\Model\BaseServer
+            targetDocument: Discord\Base\AppBundle\Model\Server
         module:
             targetDocument: Discord\Base\AppBundle\Model\Module
