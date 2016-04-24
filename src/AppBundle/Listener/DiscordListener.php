@@ -28,7 +28,6 @@ use Discord\Parts\WebSockets\PresenceUpdate;
 use Discord\Parts\WebSockets\TypingStart;
 use Discord\Parts\WebSockets\VoiceStateUpdate;
 use Discord\WebSockets\Event;
-use Discord\WebSockets\Events\GuildBanAdd;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
