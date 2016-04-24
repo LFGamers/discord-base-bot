@@ -117,7 +117,11 @@ abstract class AbstractBotCommand
                 continue;
             }
 
-            $type     = $handler['type'];
+            $type = $handler['type'];
+            if ($type === 'responds' && !$request->isBotMention()) {
+                continue;
+            }
+
             $pattern  = $handler['pattern'];
             $callback = $handler['callback'];
             $content  = $request->getContent($type === 'responds');
@@ -128,35 +132,6 @@ abstract class AbstractBotCommand
             if (!$matched) {
                 continue;
             }
-
-            $server = $request->getServer();
-            $this->logger->debug('Matched '.$this->getName());
-            $this->logger->info(
-                "Message Received, and matched\n".
-                Yaml::dump(
-                    [
-                        'Message' => [
-                            'time'       => (new \DateTime())->format('Y-m-d H:i:s'),
-                            'author'     => $request->getAuthor()->username,
-                            'server'     => $request->isPrivateMessage() ? null : $server->name,
-                            'channel'    => $request->getChannel()->name,
-                            'content'    => $request->getContent(),
-                            'botMention' => $request->isBotMention(),
-                            'pm'         => $request->isPrivateMessage(),
-                            'regex'      => $pattern,
-                            'matches'    => $matches,
-                            'mentions'   => array_map(
-                                function ($user) {
-                                    return $user->username.' - '.$user->id;
-                                },
-                                $request->getMentions()
-                            ),
-                        ],
-                    ],
-                    4,
-                    4
-                )
-            );
 
             if ($callback($request, $matches) !== false) {
                 return true;

@@ -32,18 +32,18 @@ class ServerEvent extends Event
     private $type;
 
     /**
-     * @var array
+     * @var mixed
      */
     private $data;
 
     /**
      * @param Guild  $server
      * @param string $type
-     * @param array  $data
+     * @param mixed  $data
      *
      * @return ServerEvent
      */
-    public static function create(Guild $server, $type, array $data)
+    public static function create(Guild $server, $type, ...$data)
     {
         return new self($server, $type, $data);
     }
@@ -53,9 +53,9 @@ class ServerEvent extends Event
      *
      * @param Guild  $server
      * @param string $type
-     * @param array  $data
+     * @param mixed  $data
      */
-    public function __construct(Guild $server, $type, array $data)
+    public function __construct(Guild $server, $type, ...$data)
     {
         $this->server = $server;
         $this->type   = $type;
@@ -79,7 +79,7 @@ class ServerEvent extends Event
     }
 
     /**
-     * @return array
+     * @return mixed
      */
     public function getData()
     {

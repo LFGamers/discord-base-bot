@@ -56,6 +56,8 @@ class ServerManagerFactory
             throw new \Exception('ServerManager must extend '.ServerManager::class);
         }
 
+        $this->container->get('repository.server_manager')->push($instance);
+
         return $instance;
     }
 }

@@ -301,7 +301,9 @@ class Request
         }
 
         // If the content starts with the prefix, its a mention
-        if (strpos($this->getContent(false), $this->prefix) === 0) {
+        $dbServer = $this->getDatabaseServer();
+        $prefix   = $dbServer === null ? $this->prefix : $dbServer->getPrefix();
+        if (strpos($this->getContent(false), $prefix) === 0) {
             return true;
         }
 

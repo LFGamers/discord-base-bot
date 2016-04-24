@@ -112,6 +112,7 @@ class ServerManager
         }
 
         $method = 'on'.ucfirst($event->getType());
+        $this->logger->debug("Checking for {$method} method");
         if (method_exists($this, $method)) {
             $this->$method($event->getData());
         }
@@ -137,8 +138,8 @@ class ServerManager
         }
 
         $this->logger->debug(sprintf(
-            '[%s] [%s] [%s/#%s] <@%s> %s',
-            $isCommand ? 'Command' : 'Message',
+            '%s <comment>[%s]</comment> <question>[%s/#%s]</question> <comment><@%s></comment> %s',
+            $isCommand ? '<error>[Command]</error>' : '<info>[Message]</info>',
             (new \DateTime())->format('d/m/y H:i:s A'),
             $request->isPrivateMessage() ? 'Private Message' : $request->getServer()->name,
             $request->getChannel()->name,
