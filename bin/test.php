@@ -27,7 +27,7 @@ $bot = Bot::create(
             'prefix'    => '%',
             'status'    => getenv('STATUS'),
             'sharding'  => [
-                'enabled'    => true,
+                'enabled'    => getenv('SHARD_ID') !== false,
                 'shardId'    => getenv('SHARD_ID'),
                 'shardCount' => getenv('SHARD_COUNT'),
             ],

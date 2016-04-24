@@ -38,6 +38,7 @@ class Configuration implements ConfigurationInterface
                 ->append($this->addDatabaseNode())
                 ->arrayNode('parameters')
                     ->addDefaultsIfNotSet()
+                    ->ignoreExtraKeys(false)
                     ->children()
                         ->append($this->addShardingNode())
                         ->scalarNode('name')->isRequired()->end()
