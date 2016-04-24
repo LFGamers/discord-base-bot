@@ -172,7 +172,7 @@ class ServerManager
             ->findOneBy(['identifier' => $this->clientServer->getAttribute('id')]);
 
         if (empty($server)) {
-            $server = new $cls;
+            $server = new $cls();
             $server->setIdentifier($this->clientServer->getAttribute('id'));
             $server->setOwner($this->clientServer->getOwnerAttribute()->getAttribute('id'));
             $server->setPrefix($this->container->getParameter('prefix'));
