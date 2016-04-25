@@ -45,7 +45,7 @@ class AppExtension extends Extension
             $container
                 ->setDefinition(
                     'subscriber.mapping.orm',
-                    new Definition(ORMMappingSubscriber::class, $container->getParameter('server_class'))
+                    new Definition(ORMMappingSubscriber::class, [$container->getParameter('server_class')])
                 )
                 ->addTag('doctrine.event_subscriber', ['connection' => 'default']);
         }

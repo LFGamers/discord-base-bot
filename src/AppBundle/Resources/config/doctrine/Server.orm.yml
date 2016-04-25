@@ -23,7 +23,3 @@ Discord\Base\AppBundle\Model\Server:
         prefix:
             type: string
             length: 8
-    oneToMany:
-        modules:
-            targetEntity: Discord\Base\AppBundle\Model\ServerModule
-            mappedBy: server
