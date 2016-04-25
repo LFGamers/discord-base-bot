@@ -11,8 +11,10 @@
 
 namespace Discord\Base\AppBundle\DependencyInjection;
 
+use Discord\Base\AppBundle\Subscriber\ORMMappingSubscriber;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
@@ -38,6 +40,15 @@ class AppExtension extends Extension
                 ? 'doctrine.orm.default_entity_manager'
                 : 'doctrine_mongodb.odm.default_document_manager'
         );
+
+        if ($container->getParameter('main_database') === 'mysql') {
+            $container
+                ->setDefinition(
+                    'subscriber.mapping.orm',
+                    new Definition(ORMMappingSubscriber::class, $container->getParameter('server_class'))
+                )
+                ->addTag('doctrine.event_subscriber', ['connection' => 'default']);
+        }
 
         $sharding = $container->getParameter('sharding');
         if ($sharding['enabled']) {

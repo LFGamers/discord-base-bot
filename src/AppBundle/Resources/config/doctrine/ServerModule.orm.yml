@@ -9,9 +9,6 @@ Discord\Base\AppBundle\Model\ServerModule:
         enabled:
             type: boolean
     manyToOne:
-        server:
-            targetEntity: Discord\Base\AppBundle\Model\Server
-            inversedBy: modules
         module:
             targetEntity: Discord\Base\AppBundle\Model\Module
     uniqueConstraints:
