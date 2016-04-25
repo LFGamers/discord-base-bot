@@ -27,6 +27,7 @@ use Doctrine\ORM\EntityRepository;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -112,7 +113,6 @@ class ServerManager
         }
 
         $method = 'on'.ucfirst($event->getType());
-        $this->logger->debug("Checking for {$method} method");
         if (method_exists($this, $method)) {
             call_user_func_array([$this, $method], $event->getData());
         }
@@ -135,15 +135,19 @@ class ServerManager
             }
         }
 
-        $this->logger->debug(sprintf(
-            '%s <comment>[%s]</comment> <question>[%s/#%s]</question> <comment><@%s></comment> %s',
-            $isCommand ? '<error>[Command]</error>' : '<info>[Message]</info>',
-            (new \DateTime())->format('d/m/y H:i:s A'),
-            $request->isPrivateMessage() ? 'Private Message' : $request->getServer()->name,
-            $request->getChannel()->name,
-            $request->getAuthor()->username,
-            $request->getContent()
-        ));
+        if ($this->container->getParameter('log_messages') || $isCommand) {
+            $this->logger->debug(
+                sprintf(
+                    '%s <comment>[%s]</comment> <question>[%s/#%s]</question> <comment><@%s></comment> %s',
+                    $isCommand ? '<error>[Command]</error>' : '<info>[Message]</info>',
+                    (new \DateTime())->format('d/m/y H:i:s A'),
+                    $request->isPrivateMessage() ? 'Private Message' : $request->getServer()->name,
+                    $request->getChannel()->name,
+                    $request->getAuthor()->username,
+                    str_replace("\n", '\n', $request->getContent())
+                )
+            );
+        }
     }
 
     /**
@@ -151,9 +155,6 @@ class ServerManager
      */
     public function updateServer(Guild $clientServer)
     {
-        $this->databaseServer->setIdentifier($clientServer->getAttribute('id'));
-        $this->databaseServer->setOwner($clientServer->getOwnerAttribute()->getAttribute('id'));
-
         $this->getManager()->persist($this->databaseServer);
         $this->getManager()->flush($this->databaseServer);
     }

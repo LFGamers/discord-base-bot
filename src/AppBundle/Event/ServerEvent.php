@@ -53,9 +53,9 @@ class ServerEvent extends Event
      *
      * @param Guild  $server
      * @param string $type
-     * @param mixed  $data
+     * @param array  $data
      */
-    public function __construct(Guild $server, $type, ...$data)
+    public function __construct(Guild $server, $type, $data)
     {
         $this->server = $server;
         $this->type   = $type;
@@ -79,7 +79,7 @@ class ServerEvent extends Event
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getData()
     {

@@ -30,6 +30,7 @@ use Discord\Parts\WebSockets\VoiceStateUpdate;
 use Discord\WebSockets\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -278,7 +279,10 @@ class DiscordListener
         /** @var Guild $guild */
         foreach ($this->discord->client->guilds as $guild) {
             if ($guild->getAttribute('id') === $server->getAttribute('id')) {
-                $event = call_user_func_array([ServerEvent::class, 'create'], [$guild, $type, $data]);
+                $params = [$guild, $type];
+                $params = array_merge($params, $data);
+
+                $event = call_user_func_array([ServerEvent::class, 'create'], $params);
                 $this->dispatcher->dispatch(ServerEvent::class, $event);
             }
         }

@@ -51,6 +51,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('log_dir')->isRequired()->end()
                         ->scalarNode('cache_dir')->isRequired()->end()
                         ->scalarNode('server_class')->isRequired()->end()
+                        ->booleanNode('log_messages')->defaultFalse()->end()
                         ->scalarNode('server_manager_class')
                             ->defaultValue(ServerManager::class)
                         ->end()
