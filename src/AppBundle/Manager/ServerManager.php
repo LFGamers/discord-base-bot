@@ -114,17 +114,15 @@ class ServerManager
         $method = 'on'.ucfirst($event->getType());
         $this->logger->debug("Checking for {$method} method");
         if (method_exists($this, $method)) {
-            $this->$method($event->getData());
+            call_user_func_array([$this, $method], $event->getData());
         }
     }
 
     /**
-     * @param array $data
+     * @param Request $request
      */
-    protected function onMessage(array $data)
+    protected function onMessage(Request $request)
     {
-        /** @var Request $request */
-        $request = $data['request'];
         $request->setServerManager($this);
 
         $isCommand = false;
@@ -160,6 +158,26 @@ class ServerManager
         $this->getManager()->flush($this->databaseServer);
     }
 
+    protected function createDatabaseServer(bool $flush = true) : Server
+    {
+        $cls = $this->container->getParameter('server_class');
+
+        /** @var Server $server */
+        $server = new $cls();
+        $server->setIdentifier($this->clientServer->getAttribute('id'));
+        $server->setOwner($this->clientServer->getOwnerAttribute()->getAttribute('id'));
+        $server->setPrefix($this->container->getParameter('prefix'));
+        $server->setModules($this->defaultModules($server));
+
+        $this->getManager()->persist($server);
+
+        if ($flush) {
+            $this->getManager()->flush($server);
+        }
+
+        return $server;
+    }
+
     /**
      *
      */
@@ -172,14 +190,7 @@ class ServerManager
             ->findOneBy(['identifier' => $this->clientServer->getAttribute('id')]);
 
         if (empty($server)) {
-            $server = new $cls();
-            $server->setIdentifier($this->clientServer->getAttribute('id'));
-            $server->setOwner($this->clientServer->getOwnerAttribute()->getAttribute('id'));
-            $server->setPrefix($this->container->getParameter('prefix'));
-            $server->setModules($this->defaultModules($server));
-
-            $this->getManager()->persist($server);
-            $this->getManager()->flush($server);
+            $server = $this->createDatabaseServer();
         }
 
         return $server;

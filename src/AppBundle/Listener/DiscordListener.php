@@ -269,7 +269,7 @@ class DiscordListener
         );
     }
 
-    private function emitServerEvent(Guild $server = null, $type, array $data)
+    private function emitServerEvent(Guild $server = null, $type, ...$data)
     {
         if (empty($server)) {
             return false;
@@ -278,7 +278,8 @@ class DiscordListener
         /** @var Guild $guild */
         foreach ($this->discord->client->guilds as $guild) {
             if ($guild->getAttribute('id') === $server->getAttribute('id')) {
-                $this->dispatcher->dispatch(ServerEvent::class, ServerEvent::create($guild, $type, $data));
+                $event = call_user_func_array([ServerEvent::class, 'create'], [$guild, $type, $data]);
+                $this->dispatcher->dispatch(ServerEvent::class, $event);
             }
         }
     }
