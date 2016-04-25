@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-servers-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -16,7 +16,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -53,14 +52,14 @@ class ORMMappingSubscriber implements EventSubscriber
         /** @var ClassMetadata $metadata */
         $metadata = $eventArgs->getClassMetadata();
 
-        if ($metadata->getName() != ServerModule::class) {
+        if ($metadata->getName() !== ServerModule::class) {
             return;
         }
 
         $metadata->mapManyToOne(
             [
                 'targetEntity' => $this->serverClass,
-                'inversedBy'   => 'modules'
+                'inversedBy'   => 'modules',
             ]
         );
     }
