@@ -16,7 +16,6 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
