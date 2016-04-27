@@ -56,7 +56,7 @@ class AppExtension extends \Twig_Extension
                         if (method_exists($item, 'is'.$attr)) {
                             $val = $item->{'is'.$attr}();
                         } else {
-                            throw new \InvalidArgumentException("Property with that value does not exist.");
+                            throw new \InvalidArgumentException('Property with that value does not exist.');
                         }
                     }
                 }
@@ -99,7 +99,7 @@ class AppExtension extends \Twig_Extension
      *
      * @return string
      */
-    private function truncate($string, $limit, $break = " ", $pad = "...")
+    private function truncate($string, $limit, $break = ' ', $pad = '...')
     {
         // return with no change if string is shorter than $limit
         if (strlen($string) <= $limit) {
