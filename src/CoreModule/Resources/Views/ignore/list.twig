@@ -1,5 +1,5 @@
 Below is a list of all the things I'm ignoring:
 
 {% for index, ignore in ignores if ignore.ignored %}
-{{ index + 1 }}) **{{ ignore.type }}** - *{{ ignore.name }}*
+{{ index + 1 }}) **{{ pad_longest(ignore.type, ignores, 'type') }}** - *{{ ignore.name }}*
 {% endfor %}

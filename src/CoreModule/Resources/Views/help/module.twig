@@ -2,10 +2,9 @@
 
 ```apache
 {% for command in module.commands if not command.adminCommand %}
-{{ command.name }} - {{ command.description }}
+{{ pad_longest(command.name, module.commands, 'name') }} - {{ command.description }}
 {% endfor %}
-
 {% if request.isAdmin %}{% for command in module.commands if command.adminCommand %}
-{{ command.name }} - Admin - {{ command.description }}
+{{ pad_longest(command.name, module.commands, 'name') }} - Admin - {{ command.description }}
 {% endfor %}{% endif %}
 ```

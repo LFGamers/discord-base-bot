@@ -5,6 +5,9 @@
         <service id="discord" class="Discord\Base\AppBundle\Discord">
             <argument>%token%</argument>
         </service>
+        <service id="twig.app" class="Discord\Base\AppBundle\Twig\AppExtension" public="false">
+            <tag name="twig.extension"/>
+        </service>
     </services>
 
 </container>
