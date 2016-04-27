@@ -249,4 +249,12 @@ class ServerManager
     {
         return $this->databaseServer;
     }
+
+    /**
+     * @return Guild
+     */
+    public function getClientServer()
+    {
+        return $this->clientServer;
+    }
 }

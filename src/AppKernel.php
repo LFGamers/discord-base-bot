@@ -124,14 +124,17 @@ class AppKernel extends Kernel
             )
         );
 
-        $bundles = [
-            new FrameworkBundle(),
-            new MonologBundle(),
-            new DoctrineBundle(),
-            new TwigBundle(),
-            new CacheAdapterBundle(),
-            new AppBundle(),
-        ];
+        $bundles = array_merge(
+            [
+                new FrameworkBundle(),
+                new MonologBundle(),
+                new DoctrineBundle(),
+                new TwigBundle(),
+                new CacheAdapterBundle(),
+                new AppBundle(),
+            ],
+            $this->configuration['bundles']
+        );
 
         if (class_exists(DoctrineMongoDBBundle::class) && array_key_exists('doctrine_mongodb', $this->configuration)) {
             $bundles[] = new DoctrineMongoDBBundle();
@@ -203,6 +206,7 @@ class AppKernel extends Kernel
 
         $configuration = $this->configuration;
         unset($configuration['modules']);
+        unset($configuration['bundles']);
 
         $c->setParameter('kernel.modules', array_map('get_class', $this->modules));
 

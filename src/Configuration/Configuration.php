@@ -30,10 +30,14 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->addDefaultsIfNotSet()
+            ->ignoreExtraKeys(false)
             ->children()
                 ->arrayNode('cache_adapter')->ignoreExtraKeys(false)->end()
                 ->arrayNode('modules')
                     ->prototype('scalar')->end()
+                ->end()
+                ->arrayNode('bundles')
+                    ->prototype('variable')->end()
                 ->end()
                 ->append($this->addDatabaseNode())
                 ->arrayNode('parameters')
