@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-servers-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -44,16 +44,16 @@ class AppExtension extends \Twig_Extension
                     if (isset($item[$attribute])) {
                         $val = $item[$attribute];
                     } else {
-                        throw new \InvalidArgumentException("Property with that value does not exist.");
+                        throw new \InvalidArgumentException('Property with that value does not exist.');
                     }
                 } else {
                     $attr = str_replace(' ', '', ucwords(str_replace('_', ' ', $attribute)));
-                    if (method_exists($item, 'get' . $attr)) {
+                    if (method_exists($item, 'get'.$attr)) {
                         $val = $item->{'get'.$attr}();
-                    } else if (method_exists($item, 'is' . $attr)) {
+                    } elseif (method_exists($item, 'is'.$attr)) {
                         $val = $item->{'is'.$attr}();
                     } else {
-                        throw new \InvalidArgumentException("Property with that value does not exist.");
+                        throw new \InvalidArgumentException('Property with that value does not exist.');
                     }
                 }
             } else {
