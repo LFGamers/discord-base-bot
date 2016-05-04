@@ -72,6 +72,11 @@ class DiscordListener
     private $adminId;
 
     /**
+     * @var bool
+     */
+    private $interactive;
+
+    /**
      * MessageListener constructor.
      *
      * @param Discord                  $discord
@@ -80,7 +85,8 @@ class DiscordListener
      * @param RequestFactory           $factory
      * @param ServerManagerFactory     $managerFactory
      * @param IgnoredRepository        $ignoredRepository
-     * @param                          $adminId
+     * @param int                      $adminId
+     * @param bool                     $interactive
      */
     public function __construct(
         Discord $discord,
@@ -89,7 +95,8 @@ class DiscordListener
         RequestFactory $factory,
         ServerManagerFactory $managerFactory,
         IgnoredRepository $ignoredRepository,
-        $adminId
+        $adminId,
+        $interactive
     ) {
         $this->discord           = $discord;
         $this->dispatcher        = $dispatcher;
@@ -98,6 +105,7 @@ class DiscordListener
         $this->managerFactory    = $managerFactory;
         $this->ignoredRepository = $ignoredRepository;
         $this->adminId           = $adminId;
+        $this->interactive       = $interactive;
     }
 
     /**

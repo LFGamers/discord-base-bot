@@ -10,6 +10,7 @@
             <argument type="service" id="factory.server_manager"/>
             <argument type="service" id="repository.ignored"/>
             <argument>%admin_id%</argument>
+            <argument>%interactive%</argument>
         </service>
     </services>
 

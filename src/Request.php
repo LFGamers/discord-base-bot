@@ -75,6 +75,11 @@ class Request
     private $serverManager;
 
     /**
+     * @var bool
+     */
+    private $interactive = true;
+
+    /**
      * Request constructor.
      *
      * @param Discord          $discord
@@ -101,10 +106,22 @@ class Request
     }
 
     /**
+     * @param bool $interactive
+     */
+    public function setInteractive($interactive)
+    {
+        $this->interactive = $interactive;
+    }
+
+    /**
      * @param AbstractBotCommand $command
      */
     public function processCommand(AbstractBotCommand $command)
     {
+        if (!$this->interactive) {
+            return;
+        }
+
         $this->handled = $command->handle($this);
     }
 
@@ -137,10 +154,14 @@ class Request
      * @param int    $delay
      * @param int    $deleteDelay
      *
-     * @return mixed;
+     * @return mixed
      */
     public function sendMessage(Part $location, $message, $delay = 0, $deleteDelay = 0)
     {
+        if (!$this->interactive) {
+            return false;
+        }
+
         if (strlen($message) > static::MAX_MESSAGE_LENGTH) {
             return $this->logger->error('Message is too long');
         }

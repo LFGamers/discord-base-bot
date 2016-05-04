@@ -45,6 +45,7 @@ class Configuration implements ConfigurationInterface
                     ->ignoreExtraKeys(false)
                     ->children()
                         ->append($this->addShardingNode())
+                        ->booleanNode('interactive')->defaultTrue()->end()
                         ->scalarNode('name')->isRequired()->end()
                         ->scalarNode('version')->isRequired()->end()
                         ->scalarNode('author')->isRequired()->end()
