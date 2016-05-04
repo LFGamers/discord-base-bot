@@ -71,11 +71,11 @@ class RequestFactory
         $prefix,
         $interactive
     ) {
-        $this->discord = $discord;
-        $this->logger  = $logger;
-        $this->twig    = $twig;
-        $this->adminId = $adminId;
-        $this->prefix  = $prefix;
+        $this->discord     = $discord;
+        $this->logger      = $logger;
+        $this->twig        = $twig;
+        $this->adminId     = $adminId;
+        $this->prefix      = $prefix;
         $this->interactive = $interactive;
     }
 
