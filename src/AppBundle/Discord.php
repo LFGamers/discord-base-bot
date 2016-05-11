@@ -14,7 +14,6 @@ namespace Discord\Base\AppBundle;
 use Discord\Cache\Cache;
 use Discord\Cache\Drivers\ArrayCacheDriver;
 use Discord\WebSockets\WebSocket;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>

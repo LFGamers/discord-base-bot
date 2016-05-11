@@ -156,7 +156,7 @@ class RunCommand extends ContainerAwareCommand
     private function createServerManagers()
     {
         /**
-         * @var Discord       $discord
+         * @var Discord
          * @var ObjectManager $manager
          */
         $discord = $this->getContainer()->get('discord');
@@ -192,7 +192,7 @@ class RunCommand extends ContainerAwareCommand
             $discord->ws->loop->addPeriodicTimer(
                 $delay,
                 function () {
-                    $this->output->note("Saving current UoW to database.");
+                    $this->output->note('Saving current UoW to database.');
                     $this->getContainer()->get('default_manager')->flush();
                 }
             );
@@ -212,8 +212,6 @@ class RunCommand extends ContainerAwareCommand
                 return $server;
             }
         }
-
-        return null;
     }
 
     private function updateModules()

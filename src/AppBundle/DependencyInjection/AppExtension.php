@@ -17,7 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -34,7 +33,7 @@ class AppExtension extends Extension
         foreach (glob($location.'/*.xml') as $file) {
             $loader->load($file);
         }
-        
+
         $container->setAlias(
             'default_manager',
             $container->getParameter('main_database') === 'mysql'
