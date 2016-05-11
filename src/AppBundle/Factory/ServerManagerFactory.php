@@ -45,8 +45,9 @@ class ServerManagerFactory
      * @param Guild       $guild
      * @param Server|null $server
      *
-     * @return ServerManager
      * @throws \Exception
+     *
+     * @return ServerManager
      */
     public function create(Guild $guild, Server $server = null)
     {
@@ -58,7 +59,7 @@ class ServerManagerFactory
         if ($repo->has($guild->id)) {
             return $repo->get($guild->id);
         }
-        
+
         $instance = new $cls($this->container, $guild, $server);
 
         if (!($instance instanceof ServerManager)) {

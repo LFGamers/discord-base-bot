@@ -28,7 +28,6 @@ class ServerManagerRepository extends Collection
 
     /**
      * @param int  $id
-     *
      * @param null $default
      *
      * @return ServerManager|null
