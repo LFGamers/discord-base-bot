@@ -28,6 +28,7 @@ use Discord\Parts\WebSockets\PresenceUpdate;
 use Discord\Parts\WebSockets\TypingStart;
 use Discord\Parts\WebSockets\VoiceStateUpdate;
 use Discord\WebSockets\Event;
+use Monolog\Logger;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -40,6 +41,11 @@ class DiscordListener
      * @var Discord
      */
     private $discord;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * @var EventDispatcher
@@ -72,40 +78,35 @@ class DiscordListener
     private $adminId;
 
     /**
-     * @var bool
-     */
-    private $interactive;
-
-    /**
      * MessageListener constructor.
      *
      * @param Discord                  $discord
+     * @param Logger                   $logger
      * @param EventDispatcherInterface $dispatcher
      * @param BotCommandRepository     $repository
      * @param RequestFactory           $factory
      * @param ServerManagerFactory     $managerFactory
      * @param IgnoredRepository        $ignoredRepository
      * @param int                      $adminId
-     * @param bool                     $interactive
      */
     public function __construct(
         Discord $discord,
+        Logger $logger,
         EventDispatcherInterface $dispatcher,
         BotCommandRepository $repository,
         RequestFactory $factory,
         ServerManagerFactory $managerFactory,
         IgnoredRepository $ignoredRepository,
-        $adminId,
-        $interactive
+        $adminId
     ) {
         $this->discord           = $discord;
+        $this->logger            = $logger;
         $this->dispatcher        = $dispatcher;
         $this->commandRepository = $repository;
         $this->factory           = $factory;
         $this->managerFactory    = $managerFactory;
         $this->ignoredRepository = $ignoredRepository;
         $this->adminId           = $adminId;
-        $this->interactive       = $interactive;
     }
 
     /**
@@ -243,8 +244,10 @@ class DiscordListener
 
         $ws->on(
             Event::MESSAGE_DELETE,
-            function (Message $message) {
-                $this->emitServerEvent($message->full_channel->guild, 'messageDelete', $message);
+            function ($message) {
+                if ($message instanceof Message) {
+                    $this->emitServerEvent($message->full_channel->guild, 'messageDelete', $message);
+                }
             }
         );
 
@@ -291,6 +294,8 @@ class DiscordListener
 
                 $event = call_user_func_array([ServerEvent::class, 'create'], $params);
                 $this->dispatcher->dispatch(ServerEvent::class, $event);
+
+                break;
             }
         }
     }
@@ -311,9 +316,22 @@ class DiscordListener
 
     private function isIgnored(Request $request)
     {
-        $channelId = (string) $request->getChannel(true)->id;
-        $serverId  = (string) $request->getServer()->id;
-        $userId    = (string) $request->getAuthor()->id;
+        $channel = $request->getChannel(true);
+        if (!is_object($channel)) {
+            return false;
+        }
+        $server = $request->getServer();
+        if (!is_object($server)) {
+            return false;
+        }
+        $author = $request->getAuthor();
+        if (!is_object($author)) {
+            return false;
+        }
+
+        $channelId = (string) $channel->id;
+        $serverId  = (string) $server->id;
+        $userId    = (string) $author->id;
 
         if ($userId === $this->adminId) {
             return false;

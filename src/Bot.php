@@ -16,6 +16,7 @@ use Discord\Base\Configuration\Processor;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>

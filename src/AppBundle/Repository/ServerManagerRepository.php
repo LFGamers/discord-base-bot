@@ -11,6 +11,7 @@
 
 namespace Discord\Base\AppBundle\Repository;
 
+use Discord\Base\AppBundle\Manager\ServerManager;
 use Illuminate\Support\Collection;
 
 /**
@@ -20,4 +21,42 @@ use Illuminate\Support\Collection;
  */
 class ServerManagerRepository extends Collection
 {
+    /**
+     * @var ServerManager[]
+     */
+    protected $items;
+
+    /**
+     * @param int  $id
+     *
+     * @param null $default
+     *
+     * @return ServerManager|null
+     */
+    public function get($id, $default = null)
+    {
+        foreach ($this->items as $item) {
+            if ($item->getClientServer()->id === $id) {
+                return $item;
+            }
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
+    public function has($id)
+    {
+        foreach ($this->items as $item) {
+            if ($item->getClientServer()->id === $id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

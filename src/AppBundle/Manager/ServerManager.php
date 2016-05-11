@@ -26,6 +26,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -74,9 +75,12 @@ class ServerManager
      * ServerManager constructor.
      *
      * @param Container $container
-     * @param Guild     $server
+     * @param Guild     $guild
+     * @param Server    $server
+     *
+     * @throws \Exception
      */
-    public function __construct(Container $container, Guild $server)
+    public function __construct(Container $container, Guild $guild, Server $server = null)
     {
         $this->container         = $container;
         $this->dispatcher        = $container->get('event_dispatcher');
@@ -84,15 +88,18 @@ class ServerManager
         $this->logger            = $container->get('monolog.logger.bot');
         $this->commandRepository = $container->get('repository.command');
 
-        $this->clientServer   = $server;
-        $this->databaseServer = $this->fetchDatabaseServer();
+        $this->clientServer   = $guild;
+        $this->databaseServer = $server === null ? $this->fetchDatabaseServer() : $server;
 
         $this->updateServer($this->clientServer);
         $this->dispatcher->addListener(ServerEvent::class, [$this, 'onServerEvent']);
 
         $this->initialize();
         $this->dispatcher->dispatch('manager.server.loaded', ServerManagerLoaded::create($this));
-        $this->logger->debug('Created server manager for: '.$this->clientServer->name);
+
+        if (!$container->getParameter('large')) {
+            $this->logger->debug('Created server manager for: '.$this->clientServer->name);
+        }
     }
 
     /**
@@ -154,8 +161,10 @@ class ServerManager
      */
     public function updateServer(Guild $clientServer)
     {
-        $this->getManager()->persist($this->databaseServer);
-        $this->getManager()->flush($this->databaseServer);
+        if ($this->container->getParameter('database_save_delay') === false) {
+            $this->getManager()->persist($this->databaseServer);
+            $this->getManager()->flush($this->databaseServer);
+        }
     }
 
     protected function createDatabaseServer(bool $flush = true) : Server
@@ -171,7 +180,7 @@ class ServerManager
 
         $this->getManager()->persist($server);
 
-        if ($flush) {
+        if ($flush && $this->container->getParameter('database_save_delay') === false) {
             $this->getManager()->flush($server);
         }
 
