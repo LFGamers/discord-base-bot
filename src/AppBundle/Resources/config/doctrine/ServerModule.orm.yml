@@ -11,6 +11,8 @@ Discord\Base\AppBundle\Model\ServerModule:
     manyToOne:
         module:
             targetEntity: Discord\Base\AppBundle\Model\Module
+        server:
+            targetEntity: Discord\Base\AppBundle\Model\Server
     uniqueConstraints:
         identity_index:
             columns: [ server_id, module_id ]
