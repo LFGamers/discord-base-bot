@@ -12,6 +12,8 @@
 namespace Discord\Base\AppBundle\Factory;
 
 use Discord\Base\AppBundle\Manager\ServerManager;
+use Discord\Base\AppBundle\Model\Server;
+use Discord\Base\AppBundle\Repository\ServerManagerRepository;
 use Discord\Parts\Guild\Guild;
 use Symfony\Component\DependencyInjection\Container;
 
@@ -40,23 +42,31 @@ class ServerManagerFactory
     }
 
     /**
-     * @param Guild $guild
+     * @param Guild       $guild
+     * @param Server|null $server
      *
      * @throws \Exception
      *
      * @return ServerManager
      */
-    public function create(Guild $guild)
+    public function create(Guild $guild, Server $server = null)
     {
+        /** @var ServerManagerRepository $repo */
+        $repo = $this->container->get('repository.server_manager');
+
         $cls = $this->container->getParameter('server_manager_class');
 
-        $instance = new $cls($this->container, $guild);
+        if ($repo->has($guild->id)) {
+            return $repo->get($guild->id);
+        }
+
+        $instance = new $cls($this->container, $guild, $server);
 
         if (!($instance instanceof ServerManager)) {
             throw new \Exception('ServerManager must extend '.ServerManager::class);
         }
 
-        $this->container->get('repository.server_manager')->push($instance);
+        $repo->push($instance);
 
         return $instance;
     }

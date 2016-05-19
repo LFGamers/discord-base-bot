@@ -4,6 +4,7 @@
     <services>
         <service id="listener.discord" class="Discord\Base\AppBundle\Listener\DiscordListener">
             <argument type="service" id="discord"/>
+            <argument type="service" id="monolog.logger.bot"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="repository.command"/>
             <argument type="service" id="factory.request"/>

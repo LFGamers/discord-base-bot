@@ -21,7 +21,7 @@ use Discord\WebSockets\WebSocket;
 class Discord
 {
     /**
-     * @var \Discord\Discord
+     * @var \Discord\Disc1ord
      */
     public $client;
 

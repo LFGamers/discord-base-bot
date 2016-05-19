@@ -13,10 +13,13 @@ namespace Discord\Base\AppBundle\Command;
 
 use Discord\Base\AbstractModule;
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Factory\ServerManagerFactory;
 use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\Server;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
+use Discord\Parts\Guild\Guild;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -75,8 +78,9 @@ class RunCommand extends ContainerAwareCommand
     {
         $this->output = new SymfonyStyle($input, $output);
 
+        $shardTitle = $this->getShardTitle();
         $this->output->title(
-            (new \DateTime)->format('Y-m-d H:i:s').' - Starting '.$this->getContainer()->getParameter('name')
+            (new \DateTime)->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name').$shardTitle
         );
 
         $this->updateModules();
@@ -114,9 +118,9 @@ class RunCommand extends ContainerAwareCommand
                     $this->output->newLine(2);
                 }
 
+                $this->getContainer()->get('listener.discord')->listen();
                 $this->output->success('Bot is ready!');
 
-                $this->getContainer()->get('listener.discord')->listen();
                 $this->createServerManagers();
 
                 $status = $this->getContainer()->getParameter('status');
@@ -130,6 +134,19 @@ class RunCommand extends ContainerAwareCommand
         $ws->run();
     }
 
+    private function getShardTitle()
+    {
+        /** @var Discord $discord */
+        $discord = $this->getContainer()->get('discord');
+        $options = $discord->client->getOptions();
+
+        if (array_key_exists('shardId', $options)) {
+            return ' With shard key: '.json_encode([$options['shardId'], $options['shardCount']]);
+        }
+
+        return '';
+    }
+
     /**
      * @param $error
      */
@@ -140,12 +157,62 @@ class RunCommand extends ContainerAwareCommand
 
     private function createServerManagers()
     {
-        /** @var Discord $discord */
+        /**
+         * @var Discord
+         * @var ObjectManager $manager
+         */
         $discord = $this->getContainer()->get('discord');
+        $manager = $this->getContainer()->get('default_manager');
+        $repo    = $manager->getRepository('DS:Server');
 
+        $servers = $discord->client->guilds;
+        $ids     = $servers->map(
+            function (Guild $guild) {
+                return $guild->id;
+            }
+        );
+
+        $dbServers = $repo->findBy(['identifier' => $ids->toArray()]);
+
+        $this->output->text('Creating server managers for '.$servers->count().' servers.');
+        $this->output->progressStart($servers->count());
+
+        /** @var ServerManagerFactory $factory */
         $factory = $this->getContainer()->get('factory.server_manager');
         foreach ($discord->client->guilds as $server) {
-            $factory->create($server);
+            $dbServer = $this->findDbServer($dbServers, $server);
+            $factory->create($server, $dbServer);
+            $this->output->progressAdvance();
+        }
+
+        $this->output->progressFinish();
+
+        $delay = $this->getContainer()->getParameter('database_save_delay');
+        if ($delay !== false) {
+            $this->getContainer()->get('default_manager')->flush();
+
+            $discord->ws->loop->addPeriodicTimer(
+                $delay,
+                function () {
+                    $this->output->note('Saving current UoW to database.');
+                    $this->getContainer()->get('default_manager')->flush();
+                }
+            );
+        }
+    }
+
+    /**
+     * @param Server[] $dbServers
+     * @param Guild    $guild
+     *
+     * @return Server|mixed|null
+     */
+    private function findDbServer(array $dbServers, Guild $guild)
+    {
+        foreach ($dbServers as $server) {
+            if ((int) $server->getIdentifier() === (int) $guild->id) {
+                return $server;
+            }
         }
     }
 

@@ -38,9 +38,20 @@ class RequestFactory
      */
     private $twig;
 
+    /**
+     * @var int
+     */
     private $adminId;
 
+    /**
+     * @var string
+     */
     private $prefix;
+
+    /**
+     * @var bool
+     */
+    private $interactive;
 
     /**
      * ServerManagerFactory constructor.
@@ -48,16 +59,24 @@ class RequestFactory
      * @param Discord           $discord
      * @param Logger            $logger
      * @param \Twig_Environment $twig
-     * @param                   $adminId
-     * @param                   $prefix
+     * @param int               $adminId
+     * @param string            $prefix
+     * @param bool              $interactive
      */
-    public function __construct(Discord $discord, Logger $logger, \Twig_Environment $twig, $adminId, $prefix)
-    {
-        $this->discord = $discord;
-        $this->logger  = $logger;
-        $this->twig    = $twig;
-        $this->adminId = $adminId;
-        $this->prefix  = $prefix;
+    public function __construct(
+        Discord $discord,
+        Logger $logger,
+        \Twig_Environment $twig,
+        $adminId,
+        $prefix,
+        $interactive
+    ) {
+        $this->discord     = $discord;
+        $this->logger      = $logger;
+        $this->twig        = $twig;
+        $this->adminId     = $adminId;
+        $this->prefix      = $prefix;
+        $this->interactive = $interactive;
     }
 
     /**
@@ -67,6 +86,11 @@ class RequestFactory
      */
     public function create(Message $message)
     {
-        return new Request($this->discord, $this->logger, $this->twig, $this->adminId, $this->prefix, $message);
+        $request = new Request($this->discord, $this->logger, $this->twig, $this->adminId, $this->prefix, $message);
+        if (!$this->interactive) {
+            $request->setInteractive(false);
+        }
+
+        return $request;
     }
 }

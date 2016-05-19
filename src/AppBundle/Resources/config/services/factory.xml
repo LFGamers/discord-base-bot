@@ -11,6 +11,7 @@
             <argument id="twig" type="service"/>
             <argument>%admin_id%</argument>
             <argument>%prefix%</argument>
+            <argument>%interactive%</argument>
         </service>
     </services>
 
