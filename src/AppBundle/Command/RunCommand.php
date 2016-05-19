@@ -75,7 +75,9 @@ class RunCommand extends ContainerAwareCommand
     {
         $this->output = new SymfonyStyle($input, $output);
 
-        $this->output->title('Starting '.$this->getContainer()->getParameter('name'));
+        $this->output->title(
+            (new \DateTime)->format('Y-m-d H:i:s').' - Starting '.$this->getContainer()->getParameter('name')
+        );
 
         $this->updateModules();
         $this->fillIgnoredRepository();

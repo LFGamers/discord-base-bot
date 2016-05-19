@@ -13,6 +13,7 @@ namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
 use Discord\Base\Request;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -31,8 +32,8 @@ class EvalBotCommand extends AbstractBotCommand
      */
     public function setHandlers()
     {
-        $this->responds('/^eval(?:\s+)```[a-z]*\n([\s\S]*)?\n```$/i', [$this, 'evalCode']);
-        $this->responds('/^eval(?:\s+)`?([^`]*)?`?$/i', [$this, 'evalCode']);
+        $this->responds('/^eval( --raw)(?:\s+)```[a-z]*\n([\s\S]*)?\n```$/i', [$this, 'evalCode']);
+        $this->responds('/^eval( --raw)(?:\s+)`?([^`]*)?`?$/i', [$this, 'evalCode']);
     }
 
     /**
@@ -51,9 +52,14 @@ class EvalBotCommand extends AbstractBotCommand
         $message = $request->reply('Executing Code');
 
         try {
-            $response = eval($matches[1]);
+            if ($matches[1] === '--raw') {
+                $response = eval($matches[2]);
+            } else {
+                $language = new ExpressionLanguage();
+                $response = $language->evaluate($matches[2], get_defined_vars());
+            }
         } catch (\Exception $e) {
-            $request->updateMessage($message, 'Error executing code: '.$e->getMessage());
+            return $request->updateMessage($message, 'Error executing code: '.$e->getMessage());
         }
 
         if (is_array($response) || is_object($response)) {
