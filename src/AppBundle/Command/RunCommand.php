@@ -86,7 +86,7 @@ class RunCommand extends ContainerAwareCommand
         $this->updateModules();
         $this->fillIgnoredRepository();
 
-        /* @var Discord */
+        /** @var Discord $discord*/
         $discord = $this->getContainer()->get('discord');
         $ws      = $discord->ws;
 
@@ -131,7 +131,11 @@ class RunCommand extends ContainerAwareCommand
             }
         );
 
-        $ws->run();
+        try {
+            $ws->run();
+        } catch (\RuntimeException $e) {
+            $this->execute($input, $output);
+        }
     }
 
     private function getShardTitle()
