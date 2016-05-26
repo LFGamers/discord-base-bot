@@ -80,7 +80,7 @@ class RunCommand extends ContainerAwareCommand
 
         $shardTitle = $this->getShardTitle();
         $this->output->title(
-            (new \DateTime)->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name').$shardTitle
+            (new \DateTime())->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name').$shardTitle
         );
 
         $this->updateModules();
@@ -161,7 +161,7 @@ class RunCommand extends ContainerAwareCommand
 
     private function createServerManagers()
     {
-        /**
+        /*
          * @var Discord
          * @var ObjectManager $manager
          */

@@ -52,7 +52,7 @@ class EvalBotCommand extends AbstractBotCommand
         $message = $request->reply('Executing Code');
 
         try {
-            if ($matches[1] === '--raw') {
+            if ($matches[1] === ' --raw') {
                 $response = eval($matches[2]);
             } else {
                 $language = new ExpressionLanguage();
