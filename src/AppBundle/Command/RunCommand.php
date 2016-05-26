@@ -14,11 +14,13 @@ namespace Discord\Base\AppBundle\Command;
 use Discord\Base\AbstractModule;
 use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Factory\ServerManagerFactory;
+use Discord\Base\AppBundle\Manager\ServerManager;
 use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\Server;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
 use Discord\Parts\Guild\Guild;
+use Discord\WebSockets\WebSocket;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
@@ -36,6 +38,11 @@ class RunCommand extends ContainerAwareCommand
      * @var SymfonyStyle
      */
     private $output;
+
+    /**
+     * @var ServerManager[]
+     */
+    private $serverManagers;
 
     /**
      *
@@ -86,7 +93,7 @@ class RunCommand extends ContainerAwareCommand
         $this->updateModules();
         $this->fillIgnoredRepository();
 
-        /** @var Discord $discord*/
+        /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
         $ws      = $discord->ws;
 
@@ -131,11 +138,7 @@ class RunCommand extends ContainerAwareCommand
             }
         );
 
-        try {
-            $ws->run();
-        } catch (\RuntimeException $e) {
-            $this->execute($input, $output);
-        }
+        $ws->run();
     }
 
     private function getShardTitle()
@@ -152,11 +155,16 @@ class RunCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param $error
+     * @param           $error
+     * @param WebSocket $ws
      */
-    public function logError($error)
+    public function logError($error, WebSocket $ws)
     {
-        $this->output->error($error);
+        $this->output->error('Error with websocket: '.$error);
+
+        $ws->loop->stop();
+        $this->deleteServerManagers();
+        $ws->run();
     }
 
     private function createServerManagers()
@@ -184,8 +192,8 @@ class RunCommand extends ContainerAwareCommand
         /** @var ServerManagerFactory $factory */
         $factory = $this->getContainer()->get('factory.server_manager');
         foreach ($discord->client->guilds as $server) {
-            $dbServer = $this->findDbServer($dbServers, $server);
-            $factory->create($server, $dbServer);
+            $dbServer               = $this->findDbServer($dbServers, $server);
+            $this->serverManagers[] = $factory->create($server, $dbServer);
             $this->output->progressAdvance();
         }
 
@@ -286,5 +294,17 @@ class RunCommand extends ContainerAwareCommand
         foreach ($repo->findAll() as $ignored) {
             $ignoredRepository->add($ignored);
         }
+    }
+
+    /**
+     *
+     */
+    private function deleteServerManagers()
+    {
+        foreach (array_keys($this->serverManagers) as $key) {
+            unset($this->serverManagers[$key]);
+        }
+
+        $this->serverManagers = [];
     }
 }
