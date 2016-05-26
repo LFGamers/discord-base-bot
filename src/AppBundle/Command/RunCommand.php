@@ -86,7 +86,7 @@ class RunCommand extends ContainerAwareCommand
         $this->updateModules();
         $this->fillIgnoredRepository();
 
-        /** @var Discord $discord*/
+        /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
         $ws      = $discord->ws;
 
