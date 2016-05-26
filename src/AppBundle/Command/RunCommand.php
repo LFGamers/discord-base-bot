@@ -161,13 +161,15 @@ class RunCommand extends ContainerAwareCommand
     {
         /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
-        $ws      = $discord->ws;
-
-        $this->output->error('Error with websocket: '.$error);
+        $ws = $discord->ws;
 
         $ws->loop->stop();
         $this->deleteServerManagers();
+
+        $ws = $discord->restartWebSocket();
         $ws->run();
+
+        $this->output->error('Error with websocket: '.$error);
     }
 
     private function createServerManagers()

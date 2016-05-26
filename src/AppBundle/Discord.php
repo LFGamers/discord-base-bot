@@ -50,4 +50,14 @@ class Discord
 
         Cache::setCache(new ArrayCacheDriver());
     }
+
+    /**
+     * @return WebSocket
+     */
+    public function restartWebSocket()
+    {
+        unset($this->ws);
+
+        return $this->ws = new WebSocket($this->client);
+    }
 }
