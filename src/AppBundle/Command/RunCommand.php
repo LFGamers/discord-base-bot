@@ -161,7 +161,7 @@ class RunCommand extends ContainerAwareCommand
     {
         /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
-        $ws = $discord->ws;
+        $ws      = $discord->ws;
 
         $ws->loop->stop();
         $this->deleteServerManagers();
