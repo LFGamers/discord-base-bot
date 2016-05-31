@@ -13,6 +13,7 @@ namespace Discord\Base\AppBundle\Command;
 
 use Discord\Base\AbstractModule;
 use Discord\Base\AppBundle\Discord;
+use Discord\Base\AppBundle\Event\BotEvent;
 use Discord\Base\AppBundle\Factory\ServerManagerFactory;
 use Discord\Base\AppBundle\Manager\ServerManager;
 use Discord\Base\AppBundle\Model\Module;
@@ -28,12 +29,18 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  */
 class RunCommand extends ContainerAwareCommand
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
+    
     /**
      * @var SymfonyStyle
      */
@@ -83,7 +90,10 @@ class RunCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->dispatcher = $this->getContainer()->get('event_dispatcher');
         $this->output = new SymfonyStyle($input, $output);
+        
+        $this->dispatcher->dispatch(BotEvent::START, BotEvent::create('START'));
 
         $shardTitle = $this->getShardTitle();
         $this->output->title(
@@ -96,6 +106,8 @@ class RunCommand extends ContainerAwareCommand
         /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
         $ws      = $discord->ws;
+
+        $this->dispatcher->dispatch(BotEvent::PREPARE, BotEvent::create('PREPARE'));
 
         $ws->on('error', [$this, 'logError']);
 
@@ -119,6 +131,8 @@ class RunCommand extends ContainerAwareCommand
         $ws->on(
             'ready',
             function () use ($ws, $discord, &$servers, $progress) {
+                $this->dispatcher->dispatch(BotEvent::READY_START, BotEvent::create('READY_START'));
+                
                 $this->updateServerFile($servers);
                 if ($progress !== null) {
                     $progress->finish();
@@ -135,6 +149,8 @@ class RunCommand extends ContainerAwareCommand
                     $this->output->note('Setting status to: '.$status);
                     $discord->client->updatePresence($ws, $status, false);
                 }
+
+                $this->dispatcher->dispatch(BotEvent::READY_FINISH, BotEvent::create('READY_FINISH'));
             }
         );
 

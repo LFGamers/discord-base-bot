@@ -32,6 +32,7 @@ class HelpBotCommand extends AbstractBotCommand
     public function setHandlers()
     {
         $this->responds('/^help$/i', [$this, 'renderHelp']);
+        $this->responds('/^help (.*)$/i', [$this, 'renderHelpItem']);
     }
 
     /**
@@ -53,6 +54,27 @@ class HelpBotCommand extends AbstractBotCommand
                     ]
                 )
             );
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param array   $matches
+     */
+    protected function renderHelpItem(Request $request, array $matches)
+    {
+        $modules = $this->getModuleCommands();
+        foreach ($modules as $name => $commands) {
+            /** @type AbstractBotCommand[] $commands */
+            foreach ($commands as $command) {
+                if ($command->getName() === $matches[1]) {
+                    if (!empty($command->getHelp())) {
+                        $request->reply($command->getHelp());
+                    }
+
+                    return;
+                }
+            }
         }
     }
 
