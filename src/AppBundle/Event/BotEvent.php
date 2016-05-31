@@ -26,7 +26,7 @@ class BotEvent extends Event
 
     const READY_START = 'ready_start';
 
-    const READY_FINISH   = 'ready_end';
+    const READY_FINISH   = 'ready_finish';
 
     /**
      * @var string
