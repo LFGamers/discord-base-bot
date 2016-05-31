@@ -32,8 +32,8 @@ class EvalBotCommand extends AbstractBotCommand
      */
     public function setHandlers()
     {
-        $this->responds('/^eval( --raw)(?:\s+)```[a-z]*\n([\s\S]*)?\n```$/i', [$this, 'evalCode']);
-        $this->responds('/^eval( --raw)(?:\s+)`?([^`]*)?`?$/i', [$this, 'evalCode']);
+        $this->responds('/^eval( --raw)?(?:\s+)```[a-z]*\n([\s\S]*)?\n```$/i', [$this, 'evalCode']);
+        $this->responds('/^eval( --raw)?(?:\s+)`?([^`]*)?`?$/i', [$this, 'evalCode']);
     }
 
     /**
@@ -48,6 +48,9 @@ class EvalBotCommand extends AbstractBotCommand
         $client    = $this->getDiscord()->client->getClient();
         $webSocket = $this->getDiscord()->ws;
         $container = $this->container;
+        $server    = $request->getServer();
+        $author    = $request->getAuthor();
+        $channel   = $request->getChannel();
 
         $message = $request->reply('Executing Code');
 
@@ -56,7 +59,7 @@ class EvalBotCommand extends AbstractBotCommand
                 $response = eval($matches[2]);
             } else {
                 $language = new ExpressionLanguage();
-                $response = $language->evaluate($matches[2], get_defined_vars());
+                $response = @$language->evaluate($matches[2], get_defined_vars());
             }
         } catch (\Exception $e) {
             return $request->updateMessage($message, 'Error executing code: '.$e->getMessage());
