@@ -172,7 +172,7 @@ class RunCommand extends ContainerAwareCommand
          */
         $discord = $this->getContainer()->get('discord');
         $manager = $this->getContainer()->get('default_manager');
-        $repo    = $manager->getRepository('DS:Server');
+        $repo    = $manager->getRepository($this->getContainer()->getParameter('server_class'));
 
         $servers = $discord->client->guilds;
         $ids     = $servers->map(
