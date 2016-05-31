@@ -40,7 +40,7 @@ class RunCommand extends ContainerAwareCommand
      * @var EventDispatcherInterface
      */
     protected $dispatcher;
-    
+
     /**
      * @var SymfonyStyle
      */
@@ -91,8 +91,8 @@ class RunCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->dispatcher = $this->getContainer()->get('event_dispatcher');
-        $this->output = new SymfonyStyle($input, $output);
-        
+        $this->output     = new SymfonyStyle($input, $output);
+
         $this->dispatcher->dispatch(BotEvent::START, BotEvent::create('START'));
 
         $shardTitle = $this->getShardTitle();
@@ -132,7 +132,7 @@ class RunCommand extends ContainerAwareCommand
             'ready',
             function () use ($ws, $discord, &$servers, $progress) {
                 $this->dispatcher->dispatch(BotEvent::READY_START, BotEvent::create('READY_START'));
-                
+
                 $this->updateServerFile($servers);
                 if ($progress !== null) {
                     $progress->finish();
