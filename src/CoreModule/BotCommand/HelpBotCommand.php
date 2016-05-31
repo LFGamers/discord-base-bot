@@ -65,7 +65,7 @@ class HelpBotCommand extends AbstractBotCommand
     {
         $modules = $this->getModuleCommands();
         foreach ($modules as $name => $commands) {
-            /** @type AbstractBotCommand[] $commands */
+            /** @var AbstractBotCommand[] $commands */
             foreach ($commands as $command) {
                 if ($command->getName() === $matches[1]) {
                     if (!empty($command->getHelp())) {
