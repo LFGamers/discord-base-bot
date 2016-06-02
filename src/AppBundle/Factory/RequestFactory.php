@@ -26,32 +26,32 @@ class RequestFactory
     /**
      * @var Discord
      */
-    private $discord;
+    protected $discord;
 
     /**
      * @var Logger
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var \Twig_Environment
      */
-    private $twig;
+    protected $twig;
 
     /**
      * @var int
      */
-    private $adminId;
+    protected $adminId;
 
     /**
      * @var string
      */
-    private $prefix;
+    protected $prefix;
 
     /**
      * @var bool
      */
-    private $interactive;
+    protected $interactive;
 
     /**
      * ServerManagerFactory constructor.
