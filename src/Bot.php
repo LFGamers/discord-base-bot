@@ -27,11 +27,14 @@ class Bot
      */
     private $kernel;
 
-    public static function create(array $configuration, ContainerBuilder $containerBuilder = null)
+    /**
+     * @param array                 $configuration
+     * @param ContainerBuilder|null $containerBuilder
+     *
+     * @return Application
+     */
+    public static function create(array $configuration, ContainerBuilder $containerBuilder = null) : Application
     {
-        ini_set('memory_limit', '-1');
-        set_time_limit(0);
-
         $bot         = new static($configuration, $containerBuilder);
         $application = new Application($bot->getKernel());
 
@@ -47,6 +50,8 @@ class Bot
     public function __construct(array $configuration, ContainerBuilder $containerBuilder = null)
     {
         $configuration = Processor::process($configuration);
+        ini_set('memory_limit', $configuration['parameters']['memory_limit']);
+        set_time_limit(0);
 
         $env = new SymfonyEnvironment();
         if ($env->isDebug()) {
@@ -62,7 +67,7 @@ class Bot
         $this->kernel = $kernel;
     }
 
-    public function getKernel()
+    public function getKernel() : AppKernel
     {
         return $this->kernel;
     }
