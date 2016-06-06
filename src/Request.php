@@ -11,14 +11,16 @@
 
 namespace Discord\Base;
 
-use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Manager\ServerManager;
+use Discord\Discord;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
 use Discord\Parts\Part;
 use Discord\Parts\User\User;
 use Monolog\Logger;
+use React\Promise\Deferred;
+use React\Promise\Promise;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Twig_Environment;
 
@@ -154,35 +156,44 @@ class Request
      * @param int    $delay
      * @param int    $deleteDelay
      *
-     * @return mixed
+     * @return Promise
      */
     public function sendMessage(Part $location, $message, $delay = 0, $deleteDelay = 0)
     {
+        $deferred = new Deferred();
         if (!$this->interactive) {
-            return false;
+            return $deferred->reject();
         }
 
         if (strlen($message) > static::MAX_MESSAGE_LENGTH) {
-            return $this->logger->error('Message is too long');
+            return $deferred->reject('Message is too long');
         }
 
         if ($delay > 0) {
-            return $this->discord->ws->loop->addTimer(
+            return $this->discord->loop->addTimer(
                 $delay,
-                function () use ($location, $message, $deleteDelay) {
-                    $this->sendMessage($location, $message, 0, $deleteDelay);
+                function () use ($location, $message, $deleteDelay, $deferred) {
+                    $this->sendMessage($location, $message, 0, $deleteDelay)
+                        ->otherwise([$deferred, 'reject'])
+                        ->then([$deferred, 'resolve']);
                 }
             );
         }
 
         if ($location instanceof Channel || $location instanceof User) {
-            $message = $location->sendMessage($message);
+            $location->sendMessage($message)
+                ->otherwise([$deferred, 'reject'])
+                ->then(
+                    function ($message) use ($deleteDelay, $deferred) {
+                        if ($message !== false && $deleteDelay > 0) {
+                            $this->discord->loop->addTimer($deleteDelay, [$message, 'delete']);
+                        }
 
-            if ($message !== false && $deleteDelay > 0) {
-                $this->discord->ws->loop->addTimer($deleteDelay, [$message, 'delete']);
-            }
+                        $deferred->resolve($message);
+                    }
+                );
 
-            return $message;
+            return $deferred->promise();
         }
 
         throw new \InvalidArgumentException('Location is not a valid place to send a message.');
@@ -193,7 +204,7 @@ class Request
      * @param int    $delay
      * @param int    $deleteDelay
      *
-     * @return Message
+     * @return Promise
      */
     public function reply($message, $delay = 0, $deleteDelay = 0)
     {
@@ -210,12 +221,14 @@ class Request
      *
      * @return Message
      */
-    public function updateMessage(Message $message, $content)
+    public function updateMessage(Message $message, string $content)
     {
-        $message->content = $content;
-        $message->save();
+        $deferred = new Deferred();
 
-        return $message;
+        $message->content = $content;
+        $this->getChannel()->messages->save($message)->then([$deferred, 'resolve'])->otherwise([$deferred, 'reject']);
+
+        return $deferred->promise();
     }
 
     /**
@@ -226,7 +239,7 @@ class Request
      */
     public function runAfter($interval, callable $callback)
     {
-        return $this->discord->ws->loop->addTimer($interval, $callback);
+        return $this->discord->loop->addTimer($interval, $callback);
     }
 
     /**
@@ -242,7 +255,7 @@ class Request
      */
     public function getServer()
     {
-        return $this->getChannel()->getGuildAttribute();
+        return $this->discord->guilds->get('id', $this->getChannel()->guild_id);
     }
 
     /**
@@ -250,7 +263,7 @@ class Request
      */
     public function getAuthor()
     {
-        return $this->message->getAuthorAttribute();
+        return $this->message->author;
     }
 
     /**
@@ -274,9 +287,9 @@ class Request
      *
      * @return Channel
      */
-    public function getChannel($full = true)
+    public function getChannel()
     {
-        return $full ? $this->message->getFullChannelAttribute() : $this->message->getChannelAttribute();
+        return $this->message->channel;
     }
 
     /**
@@ -292,7 +305,7 @@ class Request
      */
     public function isAdmin()
     {
-        return (string) $this->getAuthor()->getAttribute('id') === $this->adminId;
+        return $this->getAuthor()->id === (string) $this->adminId;
     }
 
     /**
@@ -367,7 +380,7 @@ class Request
      */
     public function getBotMention()
     {
-        return '<@'.$this->discord->client->id.'>';
+        return '<@'.$this->discord->id.'>';
     }
 
     /**
@@ -424,5 +437,19 @@ class Request
         }
 
         return $this->serverManager->getDatabaseServer();
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return Promise
+     */
+    public function deleteMessage(Message $message)
+    {
+        $deferred = new Deferred();
+
+        $this->getChannel()->messages->delete($message)->then([$deferred, 'resolve'])->otherwise([$deferred, 'reject']);
+
+        return $deferred->promise();
     }
 }

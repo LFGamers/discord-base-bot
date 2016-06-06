@@ -11,8 +11,8 @@
 
 namespace Discord\Base\AppBundle\Factory;
 
-use Discord\Base\AppBundle\Discord;
 use Discord\Base\Request;
+use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Monolog\Logger;
 

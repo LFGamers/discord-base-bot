@@ -13,6 +13,7 @@ namespace Discord\Base\CoreModule\BotCommand;
 
 use Discord\Base\AbstractBotCommand;
 use Discord\Base\Request;
+use Discord\Parts\Channel\Message;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
@@ -44,31 +45,69 @@ class EvalBotCommand extends AbstractBotCommand
      */
     protected function evalCode(Request $request, array $matches = [])
     {
-        // Lets set some local variables for the eval
-        $client    = $this->getDiscord()->client->getClient();
-        $webSocket = $this->getDiscord()->ws;
-        $container = $this->container;
-        $server    = $request->getServer();
-        $author    = $request->getAuthor();
-        $channel   = $request->getChannel();
+        $request->deleteMessage($request->getMessage())
+            ->then(
+                function () use ($request, $matches) {
+                    $request->reply('Executing Code')
+                        ->then(
+                            function (Message $message) use ($request, $matches) {
+                                // Lets set some local variables for the eval
+                                $client    = $this->getDiscord();
+                                $container = $this->container;
+                                $server    = $request->getServer();
+                                $author    = $request->getAuthor();
+                                $channel   = $request->getChannel();
 
-        $message = $request->reply('Executing Code');
+                                $start                = microtime(true);
+                                $_____responseContent = <<<EOF
+```php
+# Executed the following code in %d ms
+%s
 
-        try {
-            if ($matches[1] === ' --raw') {
-                $response = eval($matches[2]);
-            } else {
-                $language = new ExpressionLanguage();
-                $response = @$language->evaluate($matches[2], get_defined_vars());
-            }
-        } catch (\Exception $e) {
-            return $request->updateMessage($message, 'Error executing code: '.$e->getMessage());
-        }
+# Resulted in the following:
+%s
 
-        if (is_array($response) || is_object($response)) {
-            $response = json_decode($response, true);
-        }
+```
+EOF;
 
-        $request->updateMessage($message, "```\n{$response}\n```");
+                                $sprintf   = [];
+                                $sprintf[] = $matches[2];
+
+                                try {
+                                    if ($matches[1] === ' --raw') {
+                                        $response = eval($matches[2]);
+                                        var_dump($response);
+                                    } else {
+                                        $language   = new ExpressionLanguage();
+                                        $sprintf[0] = $language->compile($matches[2], array_keys(get_defined_vars()))
+                                            . ' ('.$matches[2].')';
+                                        $response   = @$language->evaluate($matches[2], get_defined_vars());
+                                    }
+                                } catch (\Exception $e) {
+                                    var_dump($e);
+                                    $sprintf[] = $e->getMessage().' on line '.$e->getLine().' in file '.$e->getFile();
+                                    $sprintf[] = (microtime(true) - $start) * 1000;
+
+                                    $request->updateMessage(
+                                        $message,
+                                        sprintf($_____responseContent, $sprintf[2], $sprintf[0], $sprintf[1])
+                                    );
+                                }
+
+                                if (is_array($response) || is_object($response)) {
+                                    $response = json_decode($response, true);
+                                }
+
+                                $sprintf[] = $response;
+                                $sprintf[] = (microtime(true) - $start) * 1000;
+
+                                $request->updateMessage(
+                                    $message,
+                                    sprintf($_____responseContent, $sprintf[2], $sprintf[0], $sprintf[1])
+                                );
+                            }
+                        );
+                }
+            );
     }
 }

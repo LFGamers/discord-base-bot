@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -50,11 +51,18 @@ class AppExtension extends Extension
                 ->addTag('doctrine.event_subscriber', ['connection' => 'default']);
         }
 
+        $options  = [
+            'token'          => $container->getParameter('token'),
+            'loadAllMembers' => true,
+            'logger'         => new Reference('monolog.logger.bot'),
+            'cachePool'      => new Reference('cache')
+        ];
         $sharding = $container->getParameter('sharding');
         if ($sharding['enabled']) {
-            $container->getDefinition('discord')
-                ->addArgument($sharding['shardId'])
-                ->addArgument($sharding['shardCount']);
+            $options['shardId']    = (int) $sharding['shardId'];
+            $options['shardCount'] = (int) $sharding['shardCount'];
         }
+
+        $container->getDefinition('discord')->setArguments([$options]);
     }
 }

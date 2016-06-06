@@ -41,24 +41,28 @@ class HelpBotCommand extends AbstractBotCommand
     protected function renderHelp(Request $request)
     {
         $modules = $this->getModuleCommands();
-        $request->reply($request->renderTemplate('@Core/help/main.twig'));
-        foreach ($modules as $name => $commands) {
-            if (empty($commands)) {
-                continue;
-            }
+        $request->reply($request->renderTemplate('@Core/help/main.twig'))
+            ->then(
+                function () use ($modules, $request) {
+                    foreach ($modules as $name => $commands) {
+                        if (empty($commands)) {
+                            continue;
+                        }
 
-            $request->reply(
-                $request->renderTemplate(
-                    '@Core/help/module.twig',
-                    [
-                        'module' => [
-                            'name'     => str_replace('Module', '', $name),
-                            'commands' => $commands,
-                        ],
-                    ]
-                )
+                        $request->reply(
+                            $request->renderTemplate(
+                                '@Core/help/module.twig',
+                                [
+                                    'module' => [
+                                        'name'     => str_replace('Module', '', $name),
+                                        'commands' => $commands,
+                                    ],
+                                ]
+                            )
+                        );
+                    }
+                }
             );
-        }
     }
 
     /**

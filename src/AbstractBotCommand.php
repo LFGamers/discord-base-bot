@@ -117,6 +117,7 @@ abstract class AbstractBotCommand
             }
 
             $type = $handler['type'];
+
             if ($type === 'responds' && !$request->isBotMention()) {
                 continue;
             }

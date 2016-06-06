@@ -12,7 +12,6 @@
 namespace Discord\Base\AppBundle\Command;
 
 use Discord\Base\AbstractModule;
-use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Event\BotEvent;
 use Discord\Base\AppBundle\Factory\ServerManagerFactory;
 use Discord\Base\AppBundle\Manager\ServerManager;
@@ -20,11 +19,14 @@ use Discord\Base\AppBundle\Model\Module;
 use Discord\Base\AppBundle\Model\Server;
 use Discord\Base\AppBundle\Model\ServerModule;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
+use Discord\Discord;
 use Discord\Parts\Guild\Guild;
+use Discord\Parts\User\Game;
 use Discord\WebSockets\WebSocket;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;
+use Illuminate\Support\Collection;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -95,9 +97,8 @@ class RunCommand extends ContainerAwareCommand
 
         $this->dispatcher->dispatch(BotEvent::START, BotEvent::create('START'));
 
-        $shardTitle = $this->getShardTitle();
         $this->output->title(
-            (new \DateTime())->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name').$shardTitle
+            (new \DateTime())->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name')
         );
 
         $this->updateModules();
@@ -105,11 +106,10 @@ class RunCommand extends ContainerAwareCommand
 
         /** @var Discord $discord */
         $discord = $this->getContainer()->get('discord');
-        $ws      = $discord->ws;
 
         $this->dispatcher->dispatch(BotEvent::PREPARE, BotEvent::create('PREPARE'));
 
-        $ws->on('error', [$this, 'logError']);
+        $discord->on('error', [$this, 'logError']);
 
         $servers  = 0;
         $progress = null;
@@ -117,7 +117,7 @@ class RunCommand extends ContainerAwareCommand
         $this->output->note('Loading up servers. Please wait.');
         $progress = $this->output->createProgressBar($this->getTotalServers());
 
-        $ws->on(
+        $discord->on(
             'available',
             function () use (&$servers, $progress) {
                 $servers++;
@@ -128,9 +128,9 @@ class RunCommand extends ContainerAwareCommand
             }
         );
 
-        $ws->on(
+        $discord->on(
             'ready',
-            function () use ($ws, $discord, &$servers, $progress) {
+            function () use ($discord, &$servers, $progress) {
                 $this->dispatcher->dispatch(BotEvent::READY_START, BotEvent::create('READY_START'));
 
                 $this->updateServerFile($servers);
@@ -145,29 +145,14 @@ class RunCommand extends ContainerAwareCommand
                 $this->createServerManagers();
 
                 $status = $this->getContainer()->getParameter('status');
-                if (!empty($status)) {
-                    $this->output->note('Setting status to: '.$status);
-                    $discord->client->updatePresence($ws, $status, false);
-                }
+                $this->output->note('Setting status to: '.$status['name']);
+                $discord->updatePresence($discord->factory(Game::class, $status), false);
 
                 $this->dispatcher->dispatch(BotEvent::READY_FINISH, BotEvent::create('READY_FINISH'));
             }
         );
 
-        $ws->run();
-    }
-
-    private function getShardTitle()
-    {
-        /** @var Discord $discord */
-        $discord = $this->getContainer()->get('discord');
-        $options = $discord->client->getOptions();
-
-        if (array_key_exists('shardId', $options)) {
-            return ' With shard key: '.json_encode([$options['shardId'], $options['shardCount']]);
-        }
-
-        return '';
+        $discord->run();
     }
 
     /**
@@ -182,29 +167,27 @@ class RunCommand extends ContainerAwareCommand
 
     private function createServerManagers()
     {
-        /*
-         * @var Discord
-         * @var ObjectManager $manager
-         */
+        /** @var Discord $discord */
+        /** @var ObjectManager $manager */
         $discord = $this->getContainer()->get('discord');
         $manager = $this->getContainer()->get('default_manager');
         $repo    = $manager->getRepository($this->getContainer()->getParameter('server_class'));
 
-        $servers = $discord->client->guilds;
-        $ids     = $servers->map(
-            function (Guild $guild) {
-                return $guild->id;
-            }
-        );
+        /** @type Collection $servers */
+        $servers = $discord->guilds;
+        $ids = [];
+        foreach ($discord->guilds as $guild) {
+            $ids[] = $guild->id;
+        }
 
-        $dbServers = $repo->findBy(['identifier' => $ids->toArray()]);
+        $dbServers = $repo->findBy(['identifier' => $ids]);
 
         $this->output->text('Creating server managers for '.$servers->count().' servers.');
         $this->output->progressStart($servers->count());
 
         /** @var ServerManagerFactory $factory */
         $factory = $this->getContainer()->get('factory.server_manager');
-        foreach ($discord->client->guilds as $server) {
+        foreach ($discord->guilds as $server) {
             $dbServer               = $this->findDbServer($dbServers, $server);
             $this->serverManagers[] = $factory->create($server, $dbServer);
             $this->output->progressAdvance();
@@ -216,7 +199,7 @@ class RunCommand extends ContainerAwareCommand
         if ($delay !== false) {
             $this->getContainer()->get('default_manager')->flush();
 
-            $discord->ws->loop->addPeriodicTimer(
+            $discord->loop->addPeriodicTimer(
                 $delay,
                 function () {
                     $this->output->note('Saving current UoW to database.');
@@ -307,17 +290,5 @@ class RunCommand extends ContainerAwareCommand
         foreach ($repo->findAll() as $ignored) {
             $ignoredRepository->add($ignored);
         }
-    }
-
-    /**
-     *
-     */
-    private function deleteServerManagers()
-    {
-        foreach (array_keys($this->serverManagers) as $key) {
-            unset($this->serverManagers[$key]);
-        }
-
-        $this->serverManagers = [];
     }
 }
