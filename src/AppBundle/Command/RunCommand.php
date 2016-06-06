@@ -168,14 +168,14 @@ class RunCommand extends ContainerAwareCommand
     private function createServerManagers()
     {
         /** @var Discord $discord */
-        /** @var ObjectManager $manager */
+        /* @var ObjectManager $manager */
         $discord = $this->getContainer()->get('discord');
         $manager = $this->getContainer()->get('default_manager');
         $repo    = $manager->getRepository($this->getContainer()->getParameter('server_class'));
 
-        /** @type Collection $servers */
+        /** @var Collection $servers */
         $servers = $discord->guilds;
-        $ids = [];
+        $ids     = [];
         foreach ($discord->guilds as $guild) {
             $ids[] = $guild->id;
         }
