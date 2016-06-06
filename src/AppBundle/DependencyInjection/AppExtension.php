@@ -55,7 +55,7 @@ class AppExtension extends Extension
             'token'          => $container->getParameter('token'),
             'loadAllMembers' => true,
             'logger'         => new Reference('monolog.logger.bot'),
-            'cachePool'      => new Reference('cache')
+            'cachePool'      => new Reference('cache'),
         ];
         $sharding = $container->getParameter('sharding');
         if ($sharding['enabled']) {

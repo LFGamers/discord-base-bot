@@ -59,7 +59,7 @@ class EvalBotCommand extends AbstractBotCommand
                                 $channel   = $request->getChannel();
 
                                 $start                = microtime(true);
-                                $_____responseContent = <<<EOF
+                                $_____responseContent = <<<'EOF'
 ```php
 # Executed the following code in %d ms
 %s
@@ -80,7 +80,7 @@ EOF;
                                     } else {
                                         $language   = new ExpressionLanguage();
                                         $sprintf[0] = $language->compile($matches[2], array_keys(get_defined_vars()))
-                                            . ' ('.$matches[2].')';
+                                            .' ('.$matches[2].')';
                                         $response   = @$language->evaluate($matches[2], get_defined_vars());
                                     }
                                 } catch (\Exception $e) {
