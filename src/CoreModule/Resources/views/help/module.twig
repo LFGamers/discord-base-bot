@@ -1,10 +1,10 @@
 **{{ module.name }} Module:**
 
 ```apache
-{% for command in module.commands if not command.adminCommand %}
+{% for command in module.commands if not command.adminCommand and command.enabled %}
 {{ pad_longest(command.name, module.commands, 'name') }} - {{ command.description }}
 {% endfor %}
-{% if request.isAdmin %}{% for command in module.commands if command.adminCommand %}
+{% if request.isAdmin %}{% for command in module.commands if command.adminCommand and command.enabled %}
 {{ pad_longest(command.name, module.commands, 'name') }} - Admin - {{ command.description }}
 {% endfor %}{% endif %}
 ```

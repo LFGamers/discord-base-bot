@@ -62,6 +62,11 @@ abstract class AbstractBotCommand
     /**
      * @var bool
      */
+    protected $enabled = true;
+
+    /**
+     * @var bool
+     */
     protected $adminCommand = false;
 
     /**
@@ -213,6 +218,26 @@ abstract class AbstractBotCommand
     public function setHelp($help)
     {
         $this->help = $help;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return AbstractBotCommand
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

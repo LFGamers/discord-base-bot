@@ -35,6 +35,44 @@ class HelpBotCommand extends AbstractBotCommand
         $this->responds('/^help (.*)$/i', [$this, 'renderHelpItem']);
     }
 
+    private function renderNextHelp(Request $request, array $modules, $count = 5)
+    {
+        if (sizeof($modules) <= 0) {
+            return;
+        }
+
+        $message = '';
+
+        for ($i = 0; $i < $count; $i++) {
+            list($name, $module) = [key($modules), array_shift($modules)];
+            if (empty($name)) {
+                break;
+            }
+
+            $this->logger->info('Rendering '.$name.' module commands');
+            if (empty($module)) {
+                return $this->renderNextHelp($request, $modules);
+            }
+
+            $message .= $request->renderTemplate(
+                '@Core/help/module.twig',
+                [
+                    'module' => [
+                        'name'     => str_replace('Module', '', $name),
+                        'commands' => $module,
+                    ],
+                ]
+            );
+        }
+
+        $this->logger->info("Length of message: " . strlen($message));
+        $request->reply($message)
+            ->then(function() use ($request, $modules, $count) {
+                $this->renderNextHelp($request, $modules, $count);
+            });
+        
+    }
+
     /**
      * @param Request $request
      */
@@ -44,23 +82,7 @@ class HelpBotCommand extends AbstractBotCommand
         $request->reply($request->renderTemplate('@Core/help/main.twig'))
             ->then(
                 function () use ($modules, $request) {
-                    foreach ($modules as $name => $commands) {
-                        if (empty($commands)) {
-                            continue;
-                        }
-
-                        $request->reply(
-                            $request->renderTemplate(
-                                '@Core/help/module.twig',
-                                [
-                                    'module' => [
-                                        'name'     => str_replace('Module', '', $name),
-                                        'commands' => $commands,
-                                    ],
-                                ]
-                            )
-                        );
-                    }
+                    return $this->renderNextHelp($request, $modules);
                 }
             );
     }

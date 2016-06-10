@@ -31,6 +31,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -152,7 +153,10 @@ class RunCommand extends ContainerAwareCommand
             }
         );
 
-        $discord->run();
+        try {
+            $discord->run();
+        } catch (ContextErrorException $e) {
+        }
     }
 
     /**
