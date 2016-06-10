@@ -49,7 +49,6 @@ class HelpBotCommand extends AbstractBotCommand
                 break;
             }
 
-            $this->logger->info('Rendering '.$name.' module commands');
             if (empty($module)) {
                 return $this->renderNextHelp($request, $modules);
             }
@@ -65,7 +64,6 @@ class HelpBotCommand extends AbstractBotCommand
             );
         }
 
-        $this->logger->info('Length of message: '.strlen($message));
         $request->reply($message)
             ->then(function () use ($request, $modules, $count) {
                 $this->renderNextHelp($request, $modules, $count);
