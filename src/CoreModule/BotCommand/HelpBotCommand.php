@@ -37,7 +37,7 @@ class HelpBotCommand extends AbstractBotCommand
 
     private function renderNextHelp(Request $request, array $modules, $count = 5)
     {
-        if (sizeof($modules) <= 0) {
+        if (count($modules) <= 0) {
             return;
         }
 
@@ -65,12 +65,11 @@ class HelpBotCommand extends AbstractBotCommand
             );
         }
 
-        $this->logger->info("Length of message: " . strlen($message));
+        $this->logger->info('Length of message: '.strlen($message));
         $request->reply($message)
-            ->then(function() use ($request, $modules, $count) {
+            ->then(function () use ($request, $modules, $count) {
                 $this->renderNextHelp($request, $modules, $count);
             });
-        
     }
 
     /**
