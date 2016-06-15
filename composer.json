@@ -16,16 +16,10 @@
         "sensio/distribution-bundle":           "^5.0",
         "symfony/monolog-bundle":               "^2.4|^3.0",
         "symfony/symfony":                      "^2.8|^3.0",
-        "team-reflex/discord-php":              "dev-master@dev",
+        "team-reflex/discord-php":              "dev-v4@dev",
         "ad7six/dsn":                           "^0.4",
         "cache/adapter-bundle":                 "^0.3"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url":  "git@github.com:uniquoooo/DiscordPHP-Rewrite.git"
-        }
-    ],
     "suggest":           {
         "doctrine/orm":                "^2.4",
         "doctrine/mongodb-odm":        "^1.0",
