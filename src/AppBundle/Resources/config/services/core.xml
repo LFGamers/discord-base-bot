@@ -2,7 +2,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="discord" class="Discord\Base\AppBundle\Discord">
+        <service id="discord" class="Discord\Discord">
             <argument>%token%</argument>
         </service>
         <service id="twig.app" class="Discord\Base\AppBundle\Twig\AppExtension" public="false">

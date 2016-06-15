@@ -11,13 +11,13 @@
 
 namespace Discord\Base\AppBundle\Listener;
 
-use Discord\Base\AppBundle\Discord;
 use Discord\Base\AppBundle\Event\ServerEvent;
 use Discord\Base\AppBundle\Factory\RequestFactory;
 use Discord\Base\AppBundle\Factory\ServerManagerFactory;
 use Discord\Base\AppBundle\Repository\BotCommandRepository;
 use Discord\Base\AppBundle\Repository\IgnoredRepository;
 use Discord\Base\Request;
+use Discord\Discord;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Ban;
@@ -109,170 +109,171 @@ class DiscordListener
         $this->adminId           = $adminId;
     }
 
+    public function onMessageCreate(Message $message)
+    {
+        if ($message->author->id === $this->discord->id) {
+            return;
+        }
+
+        $request = $this->factory->create($message);
+        if ($this->isIgnored($request)) {
+            return;
+        }
+
+        if (null === $request->getServer()) {
+            $this->onPrivateMessage($request);
+
+            return;
+        }
+
+        $this->emitServerEvent($request->getServer(), 'message', $request);
+    }
+
     /**
      *
      */
     public function listen()
     {
-        $ws = $this->discord->ws;
-
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_CREATE,
             function (Guild $guild) {
                 $this->managerFactory->create($guild);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::MESSAGE_CREATE,
-            function (Message $message) {
-                if ($message->author->id === $this->discord->client->id) {
-                    return;
-                }
-
-                $request = $this->factory->create($message);
-                if ($this->isIgnored($request)) {
-                    return;
-                }
-
-                if (null === $message->full_channel->guild) {
-                    $this->onPrivateMessage($request);
-
-                    return;
-                }
-
-                $this->emitServerEvent($message->full_channel->guild, 'message', $request);
-            }
+            [$this, 'onMessageCreate']
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::CHANNEL_CREATE,
             function (Channel $channel) {
                 $this->emitServerEvent($channel->guild, 'channelCreate', $channel);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::CHANNEL_UPDATE,
             function (Channel $channel) {
                 $this->emitServerEvent($channel->guild, 'channelUpdate', $channel);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::CHANNEL_DELETE,
             function (Channel $channel) {
                 $this->emitServerEvent($channel->guild, 'channelDelete', $channel);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_BAN_ADD,
             function (Ban $ban) {
                 $this->emitServerEvent($ban->guild, 'ban', $ban);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_BAN_REMOVE,
             function (Ban $ban) {
                 $this->emitServerEvent($ban->guild, 'unban', $ban);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_DELETE,
             function (Guild $guild) {
                 $this->emitServerEvent($guild, 'serverDelete', $guild);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_MEMBER_ADD,
             function (Member $member) {
-                $guild = $this->discord->client->guilds->get('id', $member->guild_id);
+                $guild = $this->discord->guilds->get('id', $member->guild_id);
                 $this->emitServerEvent($guild, 'memberCreate', $member);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_MEMBER_REMOVE,
             function (Member $member) {
-                $guild = $this->discord->client->guilds->get('id', $member->guild_id);
+                $guild = $this->discord->guilds->get('id', $member->guild_id);
                 $this->emitServerEvent($guild, 'memberDelete', $member);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_MEMBER_UPDATE,
-            function (Member $member) {
-                $guild = $this->discord->client->guilds->get('id', $member->guild_id);
-                $this->emitServerEvent($guild, 'memberUpdate', $member);
+            function (Member $member, $discord) {
+                $guild = $this->discord->guilds->get('id', $member->guild_id);
+                $this->emitServerEvent($guild, 'memberUpdate', $member, $discord);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_ROLE_CREATE,
             function (Role $role) {
-                $guild = $this->discord->client->guilds->get('id', $role->guild_id);
+                $guild = $this->discord->guilds->get('id', $role->guild_id);
                 $this->emitServerEvent($guild, 'roleCreate', $role);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_ROLE_DELETE,
             function (Role $role) {
-                $guild = $this->discord->client->guilds->get('id', $role->guild_id);
+                $guild = $this->discord->guilds->get('id', $role->guild_id);
                 $this->emitServerEvent($guild, 'roleDelete', $role);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_ROLE_UPDATE,
             function (Role $role) {
-                $guild = $this->discord->client->guilds->get('id', $role->guild_id);
+                $guild = $this->discord->guilds->get('id', $role->guild_id);
                 $this->emitServerEvent($guild, 'roleUpdate', $role);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::GUILD_UPDATE,
             function (Guild $guild) {
                 $this->emitServerEvent($guild, 'serverUpdate', $guild);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::MESSAGE_DELETE,
             function ($message) {
                 if ($message instanceof Message) {
-                    $this->emitServerEvent($message->full_channel->guild, 'messageDelete', $message);
+                    $this->emitServerEvent($message->channel->guild, 'messageDelete', $message);
                 }
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::MESSAGE_UPDATE,
             function (Message $message) {
-                $this->emitServerEvent($message->full_channel->guild, 'messageUpdate', $message);
+                $this->emitServerEvent($message->channel->guild, 'messageUpdate', $message);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::PRESENCE_UPDATE,
             function (PresenceUpdate $presenceUpdate) {
                 $this->emitServerEvent($presenceUpdate->guild, 'presenceUpdate', $presenceUpdate);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::TYPING_START,
             function (TypingStart $typingStart) {
                 $this->emitServerEvent($typingStart->channel->guild, 'typingStart', $typingStart);
             }
         );
 
-        $ws->on(
+        $this->discord->on(
             Event::VOICE_STATE_UPDATE,
             function (VoiceStateUpdate $voiceStateUpdate) {
                 $this->emitServerEvent($voiceStateUpdate->guild, 'voiceStateUpdate', $voiceStateUpdate);
@@ -287,8 +288,8 @@ class DiscordListener
         }
 
         /** @var Guild $guild */
-        foreach ($this->discord->client->guilds as $guild) {
-            if ($guild->getAttribute('id') === $server->getAttribute('id')) {
+        foreach ($this->discord->guilds as $guild) {
+            if ($guild->id === $server->id) {
                 $params = [$guild, $type];
                 $params = array_merge($params, $data);
 
@@ -316,14 +317,16 @@ class DiscordListener
 
     private function isIgnored(Request $request)
     {
-        $channel = $request->getChannel(true);
+        $channel = $request->getChannel();
         if (!is_object($channel)) {
             return false;
         }
+
         $server = $request->getServer();
         if (!is_object($server)) {
             return false;
         }
+
         $author = $request->getAuthor();
         if (!is_object($author)) {
             return false;
