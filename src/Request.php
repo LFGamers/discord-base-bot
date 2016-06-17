@@ -17,6 +17,7 @@ use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Guild\Guild;
 use Discord\Parts\Part;
+use Discord\Parts\User\Member;
 use Discord\Parts\User\User;
 use Monolog\Logger;
 use React\Promise\Deferred;
@@ -70,6 +71,11 @@ class Request
      * @var bool
      */
     private $handled;
+
+    /**
+     * @var Member
+     */
+    private $guildAuthor;
 
     /**
      * @var ServerManager
@@ -259,7 +265,7 @@ class Request
     }
 
     /**
-     * @return User
+     * @return User|Member
      */
     public function getAuthor()
     {
@@ -451,5 +457,21 @@ class Request
         $this->getChannel()->messages->delete($message)->then([$deferred, 'resolve'])->otherwise([$deferred, 'reject']);
 
         return $deferred->promise();
+    }
+
+    /**
+     * @param Member $member
+     */
+    public function setGuildAuthor(Member $member)
+    {
+        $this->guildAuthor = $member;
+    }
+
+    /**
+     * @return Member
+     */
+    public function getGuildAuthor() : Member
+    {
+        return $this->guildAuthor;
     }
 }

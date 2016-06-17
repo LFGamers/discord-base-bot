@@ -125,8 +125,17 @@ class DiscordListener
 
             return;
         }
-
-        $this->emitServerEvent($request->getServer(), 'message', $request);
+        
+        return $request->getServer()->members->fetch($request->getAuthor()->id)
+            ->then(function(Member $member) use ($request) {
+                $request->setGuildAuthor($member);
+                $this->emitServerEvent($request->getServer(), 'message', $request);
+            })
+            ->otherwise(
+                function ($e) use ($request) {
+                    $this->emitServerEvent($request->getServer(), 'message', $request);
+                }
+            );
     }
 
     /**
