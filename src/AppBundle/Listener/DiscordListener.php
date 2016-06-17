@@ -125,9 +125,9 @@ class DiscordListener
 
             return;
         }
-        
+
         return $request->getServer()->members->fetch($request->getAuthor()->id)
-            ->then(function(Member $member) use ($request) {
+            ->then(function (Member $member) use ($request) {
                 $request->setGuildAuthor($member);
                 $this->emitServerEvent($request->getServer(), 'message', $request);
             })
