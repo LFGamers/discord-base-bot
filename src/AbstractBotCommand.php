@@ -11,7 +11,7 @@
 
 namespace Discord\Base;
 
-use Discord\Base\AppBundle\Discord;
+use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ORM\EntityManager;

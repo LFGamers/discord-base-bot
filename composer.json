@@ -18,7 +18,8 @@
         "symfony/symfony":                      "^2.8|^3.0",
         "team-reflex/discord-php":              "v4.x-dev",
         "ad7six/dsn":                           "^0.4",
-        "cache/adapter-bundle":                 "^0.3"
+        "cache/adapter-bundle":                 "^0.3",
+        "gebn/brush": "^1.0"
     },
     "suggest":           {
         "doctrine/orm":                "^2.4",

@@ -53,6 +53,8 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('author')->isRequired()->end()
                         ->scalarNode('token')->isRequired()->end()
                         ->scalarNode('prefix')->defaultValue('%')->end()
+                        ->scalarNode('pastebin_api_key')->isRequired()->end()
+                        ->scalarNode('error_channel_id')->isRequired()->end()
                         ->arrayNode('status')
                             ->children()
                                 ->scalarNode('name')->defaultValue(null)->end()

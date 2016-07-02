@@ -10,8 +10,14 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
-monolog:
 services:
+    discord_error_handler:
+        class: Discord\Base\AppBundle\Logger\Handler\ErrorHandler
+        arguments:
+            - "%error_channel_id%"
+            - "%pastebin_api_key%"
+        calls:
+            - ["setDiscord", ["@discord"]]
     bot_formatter:
         class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
         arguments:
@@ -25,11 +31,7 @@ monolog:
             type:   stream
             path:   "%log_dir%/%name%.log"
             level:  debug
-
-        console:
-            type:   console
-            verbosity_levels:
-                VERBOSITY_NORMAL: NOTICE
-            channels: bot
-            formatter: bot_formatter
+        error:
+            type: service
+            id:   discord_error_handler
     channels: ['bot']
