@@ -15,7 +15,7 @@ services:
         class: Discord\Base\AppBundle\Logger\Handler\ErrorHandler
         arguments:
             - "%error_channel_id%"
-            - "%pastebin_api_key%"
+            - "%pastebin%"
         calls:
             - ["setDiscord", ["@discord"]]
     bot_formatter:

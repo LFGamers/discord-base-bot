@@ -11,10 +11,15 @@
 
 namespace Discord\Base\AppBundle\Logger\Handler;
 
+use Brush\Accounts\Account;
+use Brush\Accounts\Credentials;
 use Brush\Accounts\Developer;
 use Brush\Pastes\Draft;
+use Brush\Pastes\Options\Format;
+use Brush\Pastes\Options\Visibility;
 use Discord\Discord;
 use Discord\Parts\Channel\Channel;
+use GuzzleHttp\Client;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 
@@ -46,16 +51,32 @@ class ErrorHandler extends AbstractProcessingHandler
     private $channel;
 
     /**
+     * @var array
+     */
+    private $pastebin;
+
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * @var string
+     */
+    private $userKey;
+
+    /**
      * ErrorHandler constructor.
      *
-     * @param int  $channelId
-     * @param bool $pastebinApiKey
+     * @param int   $channelId
+     * @param array $pastebin
      */
-    public function __construct($channelId, $pastebinApiKey)
+    public function __construct($channelId, $pastebin)
     {
         parent::__construct(Logger::ERROR, true);
         $this->channelId = $channelId;
-        $this->pastebin  = new Developer($pastebinApiKey);
+        $this->pastebin  = $pastebin;
+        $this->client    = new Client(['base_uri' => 'http://pastebin.com/api/']);
     }
 
     public function setDiscord(Discord $discord)
@@ -74,22 +95,38 @@ class ErrorHandler extends AbstractProcessingHandler
     {
         if (!$this->initialized) {
             if (!$this->initialize()) {
-                echo 'Failed to initialize.';
-
                 return;
             }
         }
 
-        $message = substr($record['message'], 0, 64);
-        $draft   = new Draft();
+        $developer = new Developer($this->pastebin['api_key']);
+        $account   = new Account(new Credentials($this->pastebin['username'], $this->pastebin['password']));
+        $draft     = new Draft();
         $draft->setContent(json_encode($record, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-        $paste = $draft->paste($this->pastebin);
+        $draft->setOwner($account);
+        $paste   = $draft->paste($developer);
+        $message = substr($record['formatted'], 0, 256);
 
-        $this->channel->sendMessage("Error: `{$message}` - {$paste->getUrl()}");
+        $this->channel->sendMessage("Error: \n\n```\n{$message}\n```\n\nPastebin: <{$paste->getUrl()}>");
     }
 
     private function initialize()
     {
+        if (empty($this->userKey)) {
+            $response = $this->client->post(
+                'api_login.php',
+                [
+                    'form_params' => [
+                        'api_dev_key'       => $this->pastebin['api_key'],
+                        'api_user_name'     => $this->pastebin['username'],
+                        'api_user_password' => $this->pastebin['password'],
+                    ]
+                ]
+            );
+
+            $this->userKey = (string) $response->getBody();
+        }
+
         if (null === $this->discord->guilds) {
             return false;
         }
