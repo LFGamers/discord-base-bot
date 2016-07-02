@@ -15,6 +15,8 @@ use Brush\Accounts\Account;
 use Brush\Accounts\Credentials;
 use Brush\Accounts\Developer;
 use Brush\Pastes\Draft;
+use Brush\Pastes\Options\Format;
+use Brush\Pastes\Options\Visibility;
 use Discord\Discord;
 use Discord\Parts\Channel\Channel;
 use GuzzleHttp\Client;
@@ -102,6 +104,10 @@ class ErrorHandler extends AbstractProcessingHandler
         $draft     = new Draft();
         $draft->setContent(json_encode($record, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         $draft->setOwner($account);
+        $draft->setVisibility(Visibility::VISIBILITY_UNLISTED);
+        $draft->setFormat(Format::fromExtension('js'));
+        $draft->setExpiry('24H');
+        $draft->setTitle($record['datetime']->format('U'));
         $paste   = $draft->paste($developer);
         $message = substr($record['formatted'], 0, 256);
 
