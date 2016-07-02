@@ -84,7 +84,6 @@ EOF;
                                         $response   = @$language->evaluate($matches[2], get_defined_vars());
                                     }
                                 } catch (\Exception $e) {
-                                    var_dump($e);
                                     $sprintf[] = $e->getMessage().' on line '.$e->getLine().' in file '.$e->getFile();
                                     $sprintf[] = (microtime(true) - $start) * 1000;
 
