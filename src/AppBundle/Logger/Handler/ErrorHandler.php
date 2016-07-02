@@ -19,7 +19,6 @@ use Brush\Pastes\Options\Format;
 use Brush\Pastes\Options\Visibility;
 use Discord\Discord;
 use Discord\Parts\Channel\Channel;
-use GuzzleHttp\Client;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 
@@ -56,16 +55,6 @@ class ErrorHandler extends AbstractProcessingHandler
     private $pastebin;
 
     /**
-     * @var Client
-     */
-    private $client;
-
-    /**
-     * @var string
-     */
-    private $userKey;
-
-    /**
      * ErrorHandler constructor.
      *
      * @param int   $channelId
@@ -76,7 +65,6 @@ class ErrorHandler extends AbstractProcessingHandler
         parent::__construct(Logger::ERROR, true);
         $this->channelId = $channelId;
         $this->pastebin  = $pastebin;
-        $this->client    = new Client(['base_uri' => 'http://pastebin.com/api/']);
     }
 
     public function setDiscord(Discord $discord)
@@ -116,21 +104,6 @@ class ErrorHandler extends AbstractProcessingHandler
 
     private function initialize()
     {
-        if (empty($this->userKey)) {
-            $response = $this->client->post(
-                'api_login.php',
-                [
-                    'form_params' => [
-                        'api_dev_key'       => $this->pastebin['api_key'],
-                        'api_user_name'     => $this->pastebin['username'],
-                        'api_user_password' => $this->pastebin['password'],
-                    ],
-                ]
-            );
-
-            $this->userKey = (string) $response->getBody();
-        }
-
         if (null === $this->discord->guilds) {
             return false;
         }
