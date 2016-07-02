@@ -15,8 +15,6 @@ use Brush\Accounts\Account;
 use Brush\Accounts\Credentials;
 use Brush\Accounts\Developer;
 use Brush\Pastes\Draft;
-use Brush\Pastes\Options\Format;
-use Brush\Pastes\Options\Visibility;
 use Discord\Discord;
 use Discord\Parts\Channel\Channel;
 use GuzzleHttp\Client;
@@ -120,7 +118,7 @@ class ErrorHandler extends AbstractProcessingHandler
                         'api_dev_key'       => $this->pastebin['api_key'],
                         'api_user_name'     => $this->pastebin['username'],
                         'api_user_password' => $this->pastebin['password'],
-                    ]
+                    ],
                 ]
             );
 
