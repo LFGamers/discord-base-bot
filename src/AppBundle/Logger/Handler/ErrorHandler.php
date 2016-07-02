@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of discord-bot.
+ * This file is part of discord-base-bot
  *
  * (c) Aaron Scherer <aequasi@gmail.com>
  *
@@ -17,7 +17,6 @@ use Discord\Discord;
 use Discord\Parts\Channel\Channel;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
-use React\Promise\Deferred;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -65,9 +64,9 @@ class ErrorHandler extends AbstractProcessingHandler
     }
 
     /**
-     * Writes the record down to the log of the implementing handler
+     * Writes the record down to the log of the implementing handler.
      *
-     * @param  array $record
+     * @param array $record
      *
      * @return void
      */
@@ -75,7 +74,7 @@ class ErrorHandler extends AbstractProcessingHandler
     {
         if (!$this->initialized) {
             if (!$this->initialize()) {
-                echo "Failed to initialize.";
+                echo 'Failed to initialize.';
 
                 return;
             }
