@@ -470,7 +470,7 @@ class Request
     /**
      * @return Member
      */
-    public function getGuildAuthor() : Member
+    public function getGuildAuthor()
     {
         return $this->guildAuthor;
     }
