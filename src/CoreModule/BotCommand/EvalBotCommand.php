@@ -57,6 +57,7 @@ class EvalBotCommand extends AbstractBotCommand
                                 $server    = $request->getServer();
                                 $author    = $request->getAuthor();
                                 $channel   = $request->getChannel();
+                                $self      = $this;
 
                                 $start                = microtime(true);
                                 $_____responseContent = <<<'EOF'
@@ -84,11 +85,10 @@ EOF;
                                         $response   = @$language->evaluate($matches[2], get_defined_vars());
                                     }
                                 } catch (\Exception $e) {
-                                    var_dump($e);
                                     $sprintf[] = $e->getMessage().' on line '.$e->getLine().' in file '.$e->getFile();
                                     $sprintf[] = (microtime(true) - $start) * 1000;
 
-                                    $request->updateMessage(
+                                    return $request->updateMessage(
                                         $message,
                                         sprintf($_____responseContent, $sprintf[2], $sprintf[0], $sprintf[1])
                                     );
