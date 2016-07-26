@@ -131,7 +131,6 @@ class Request
         }
 
         $this->handled = $command->handle($this);
-        echo $command->getName() . ' - ' . ($this->handled ? 'handled' : 'not handled') . "\n";
     }
 
     /**
