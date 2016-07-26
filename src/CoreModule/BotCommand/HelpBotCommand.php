@@ -65,9 +65,11 @@ class HelpBotCommand extends AbstractBotCommand
         }
 
         $request->reply($message)
-            ->then(function () use ($request, $modules, $count) {
-                $this->renderNextHelp($request, $modules, $count);
-            });
+            ->then(
+                function () use ($request, $modules, $count) {
+                    $this->renderNextHelp($request, $modules, $count);
+                }
+            );
     }
 
     /**
@@ -94,12 +96,14 @@ class HelpBotCommand extends AbstractBotCommand
         foreach ($modules as $name => $commands) {
             /** @var AbstractBotCommand[] $commands */
             foreach ($commands as $command) {
-                if ($command->getName() === $matches[1]) {
-                    if (!empty($command->getHelp())) {
-                        $request->reply($command->getHelp());
-                    }
+                if ($command->isEnabled()) {
+                    if ($command->getName() === $matches[1]) {
+                        if (!empty($command->getHelp())) {
+                            $request->reply($command->getHelp());
+                        }
 
-                    return;
+                        return;
+                    }
                 }
             }
         }
