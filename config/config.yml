@@ -31,7 +31,11 @@ monolog:
             type:   stream
             path:   "%log_dir%/%name%.log"
             level:  debug
+            channels: ["!event", "!doctrine"]
         error:
             type: service
             id:   discord_error_handler
-    channels: ['bot']
+        console:
+            type:   console
+            channels: ["!event", "!doctrine", "!discordphp"]
+    channels: ['bot', 'discordphp']

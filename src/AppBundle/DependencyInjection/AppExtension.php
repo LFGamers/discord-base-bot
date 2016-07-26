@@ -54,7 +54,7 @@ class AppExtension extends Extension
         $options  = [
             'token'          => $container->getParameter('token'),
             'loadAllMembers' => true,
-            'logger'         => new Reference('monolog.logger.bot'),
+            'logger'         => new Reference('monolog.logger.discordphp'),
             'cachePool'      => new Reference('cache'),
         ];
         $sharding = $container->getParameter('sharding');

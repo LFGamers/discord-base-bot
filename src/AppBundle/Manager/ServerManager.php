@@ -132,11 +132,9 @@ class ServerManager
 
         $isCommand = false;
         foreach ($this->commandRepository->all() as $command) {
-            $request->processCommand($command);
-
-            if ($request->isHandled()) {
+            if ($command->handle($request)) {
                 $isCommand = true;
-                continue;
+                break;
             }
         }
 

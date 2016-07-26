@@ -102,8 +102,6 @@ class RunCommand extends ContainerAwareCommand
             (new \DateTime())->format('Y-m-d H:i:s').'Starting '.$this->getContainer()->getParameter('name')
         );
 
-        $this->getContainer()->get('monolog.logger.bot')->error('Test');
-
         $this->updateModules();
         $this->fillIgnoredRepository();
 
