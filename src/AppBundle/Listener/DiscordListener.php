@@ -127,10 +127,12 @@ class DiscordListener
         }
 
         return $request->getServer()->members->fetch($request->getAuthor()->id)
-            ->then(function (Member $member) use ($request) {
-                $request->setGuildAuthor($member);
-                $this->emitServerEvent($request->getServer(), 'message', $request);
-            })
+            ->then(
+                function (Member $member) use ($request) {
+                    $request->setGuildAuthor($member);
+                    $this->emitServerEvent($request->getServer(), 'message', $request);
+                }
+            )
             ->otherwise(
                 function ($e) use ($request) {
                     $this->emitServerEvent($request->getServer(), 'message', $request);
@@ -164,8 +166,8 @@ class DiscordListener
 
         $this->discord->on(
             Event::CHANNEL_UPDATE,
-            function (Channel $channel) {
-                $this->emitServerEvent($channel->guild, 'channelUpdate', $channel);
+            function (Channel $channel, Channel $oldChannel) {
+                $this->emitServerEvent($channel->guild, 'channelUpdate', $channel, $oldChannel);
             }
         );
 
@@ -215,9 +217,9 @@ class DiscordListener
 
         $this->discord->on(
             Event::GUILD_MEMBER_UPDATE,
-            function (Member $member, $discord) {
+            function (Member $member, Member $oldMember) {
                 $guild = $this->discord->guilds->get('id', $member->guild_id);
-                $this->emitServerEvent($guild, 'memberUpdate', $member, $discord);
+                $this->emitServerEvent($guild, 'memberUpdate', $member, $oldMember);
             }
         );
 
@@ -239,16 +241,16 @@ class DiscordListener
 
         $this->discord->on(
             Event::GUILD_ROLE_UPDATE,
-            function (Role $role) {
+            function (Role $role, Role $oldRole) {
                 $guild = $this->discord->guilds->get('id', $role->guild_id);
-                $this->emitServerEvent($guild, 'roleUpdate', $role);
+                $this->emitServerEvent($guild, 'roleUpdate', $role, $oldRole);
             }
         );
 
         $this->discord->on(
             Event::GUILD_UPDATE,
-            function (Guild $guild) {
-                $this->emitServerEvent($guild, 'serverUpdate', $guild);
+            function (Guild $guild, Guild $oldGuild) {
+                $this->emitServerEvent($guild, 'serverUpdate', $guild, $oldGuild);
             }
         );
 
@@ -263,15 +265,15 @@ class DiscordListener
 
         $this->discord->on(
             Event::MESSAGE_UPDATE,
-            function (Message $message) {
-                $this->emitServerEvent($message->channel->guild, 'messageUpdate', $message);
+            function (Message $message, Message $oldMessage) {
+                $this->emitServerEvent($message->channel->guild, 'messageUpdate', $message, $oldMessage);
             }
         );
 
         $this->discord->on(
             Event::PRESENCE_UPDATE,
-            function (PresenceUpdate $presenceUpdate) {
-                $this->emitServerEvent($presenceUpdate->guild, 'presenceUpdate', $presenceUpdate);
+            function (PresenceUpdate $presenceUpdate, PresenceUpdate $oldPresenceUpdate) {
+                $this->emitServerEvent($presenceUpdate->guild, 'presenceUpdate', $presenceUpdate, $oldPresenceUpdate);
             }
         );
 
