@@ -166,7 +166,7 @@ class DiscordListener
 
         $this->discord->on(
             Event::CHANNEL_UPDATE,
-            function (Channel $channel, Channel $oldChannel) {
+            function (Channel $channel, Discord $discord, Channel $oldChannel) {
                 $this->emitServerEvent($channel->guild, 'channelUpdate', $channel, $oldChannel);
             }
         );
@@ -217,7 +217,7 @@ class DiscordListener
 
         $this->discord->on(
             Event::GUILD_MEMBER_UPDATE,
-            function (Member $member, Member $oldMember) {
+            function (Member $member, Discord $discord, Member $oldMember) {
                 $guild = $this->discord->guilds->get('id', $member->guild_id);
                 $this->emitServerEvent($guild, 'memberUpdate', $member, $oldMember);
             }
@@ -241,7 +241,7 @@ class DiscordListener
 
         $this->discord->on(
             Event::GUILD_ROLE_UPDATE,
-            function (Role $role, Role $oldRole) {
+            function (Role $role, Discord $discord, Role $oldRole) {
                 $guild = $this->discord->guilds->get('id', $role->guild_id);
                 $this->emitServerEvent($guild, 'roleUpdate', $role, $oldRole);
             }
@@ -249,7 +249,7 @@ class DiscordListener
 
         $this->discord->on(
             Event::GUILD_UPDATE,
-            function (Guild $guild, Guild $oldGuild) {
+            function (Guild $guild, Discord $discord, Guild $oldGuild) {
                 $this->emitServerEvent($guild, 'serverUpdate', $guild, $oldGuild);
             }
         );
@@ -265,14 +265,14 @@ class DiscordListener
 
         $this->discord->on(
             Event::MESSAGE_UPDATE,
-            function (Message $message, Message $oldMessage) {
+            function (Message $message, Discord $discord, Message $oldMessage) {
                 $this->emitServerEvent($message->channel->guild, 'messageUpdate', $message, $oldMessage);
             }
         );
 
         $this->discord->on(
             Event::PRESENCE_UPDATE,
-            function (PresenceUpdate $presenceUpdate, PresenceUpdate $oldPresenceUpdate) {
+            function (PresenceUpdate $presenceUpdate, Discord $discord, PresenceUpdate $oldPresenceUpdate) {
                 $this->emitServerEvent($presenceUpdate->guild, 'presenceUpdate', $presenceUpdate, $oldPresenceUpdate);
             }
         );

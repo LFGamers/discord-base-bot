@@ -97,7 +97,7 @@ class ServerManager
         $this->dispatcher->dispatch('manager.server.loaded', ServerManagerLoaded::create($this));
 
         if (!$container->getParameter('large')) {
-            $this->logger->debug('Created server manager for: '.$this->clientServer->name);
+            //$this->logger->debug('Created server manager for: '.$this->clientServer->name);
         }
     }
 

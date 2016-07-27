@@ -193,7 +193,13 @@ class RunCommand extends ContainerAwareCommand
         $factory = $this->getContainer()->get('factory.server_manager');
         foreach ($discord->guilds as $server) {
             $dbServer               = $this->findDbServer($dbServers, $server);
-            $this->serverManagers[] = $factory->create($server, $dbServer);
+            try {
+                $this->serverManagers[] = $factory->create($server, $dbServer);
+            } catch (\Exception $e) {
+                $this->output->progressFinish();
+                $this->logError($e->getMessage());
+                exit(0);
+            }
             $this->output->progressAdvance();
         }
 
