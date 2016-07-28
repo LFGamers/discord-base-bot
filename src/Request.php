@@ -190,9 +190,15 @@ class Request
             $location->sendMessage($message)
                 ->otherwise([$deferred, 'reject'])
                 ->then(
-                    function ($message) use ($deleteDelay, $deferred) {
+                    function (Message $message) use ($deleteDelay, $deferred) {
                         if ($message !== false && $deleteDelay > 0) {
-                            $this->discord->loop->addTimer($deleteDelay, [$message, 'delete']);
+                            $this->discord->loop->addTimer(
+                                $deleteDelay,
+                                function () use ($message) {
+                                    $channel = $message->channel;
+                                    $channel->messages->delete($message);
+                                }
+                            );
                         }
 
                         $deferred->resolve($message);
@@ -325,7 +331,13 @@ class Request
             $dbServer = $this->getDatabaseServer();
             $prefix   = $dbServer === null ? $this->prefix : $dbServer->getPrefix();
 
-            return str_replace([$prefix, $this->getBotMention().' '], '', $this->message->content);
+            if (strpos($this->message->content, $prefix) === 0) {
+                return substr($this->message->content, strlen($prefix));
+            }
+
+            if (strpos($this->message->content, $this->getBotMention() . ' ') !== false) {
+                return substr($this->message->content, strlen($this->getBotMention()) + 1);
+            }
         }
 
         return $this->message->content;
