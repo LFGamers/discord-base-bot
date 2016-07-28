@@ -335,7 +335,7 @@ class Request
                 return substr($this->message->content, strlen($prefix));
             }
 
-            if (strpos($this->message->content, $this->getBotMention() . ' ') !== false) {
+            if (strpos($this->message->content, $this->getBotMention().' ') !== false) {
                 return substr($this->message->content, strlen($this->getBotMention()) + 1);
             }
         }
