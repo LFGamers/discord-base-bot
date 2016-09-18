@@ -61,7 +61,7 @@ $bot->run();
 
 If you haven't run the bot before, you have to set up the schema with:
 
-`php bot.php doctrine:scehma:create`
+`php bot.php doctrine:schema:create`
 
 Then, run that file with the arguments `discord:run` to start the bot.
 
